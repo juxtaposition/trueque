@@ -1,10 +1,3 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
 class Roleclaims(models.Model):
@@ -61,7 +54,7 @@ class UserRoles(models.Model):
         db_table = 'UserRoles'
 
 
-class Aspnetusertokens(models.Model):
+class UserTokens(models.Model):
     userid = models.OneToOneField('Users', models.DO_NOTHING, db_column='UserId', primary_key=True)  # Field name made lowercase. The composite primary key (UserId, LoginProvider, Name) found, that is not supported. The first column is selected.
     loginprovider = models.TextField(db_column='LoginProvider')  # Field name made lowercase.
     name = models.TextField(db_column='Name')  # Field name made lowercase.
@@ -75,20 +68,11 @@ class Aspnetusertokens(models.Model):
 class Users(models.Model):
     id = models.TextField(db_column='Id', primary_key=True)  # Field name made lowercase.
     username = models.TextField(db_column='UserName', blank=True, null=True)  # Field name made lowercase.
-    normalizedusername = models.TextField(db_column='NormalizedUserName', unique=True, blank=True, null=True)  # Field name made lowercase.
     email = models.TextField(db_column='Email', blank=True, null=True)  # Field name made lowercase.
-    normalizedemail = models.TextField(db_column='NormalizedEmail', blank=True, null=True)  # Field name made lowercase.
-    emailconfirmed = models.IntegerField(db_column='EmailConfirmed')  # Field name made lowercase.
     password = models.TextField(db_column='PasswordHash', blank=True, null=True)  # Field name made lowercase.
-    securitystamp = models.TextField(db_column='SecurityStamp', blank=True, null=True)  # Field name made lowercase.
-    concurrencystamp = models.TextField(db_column='ConcurrencyStamp', blank=True, null=True)  # Field name made lowercase.
     phonenumber = models.TextField(db_column='PhoneNumber', blank=True, null=True)  # Field name made lowercase.
-    phonenumberconfirmed = models.IntegerField(db_column='PhoneNumberConfirmed')  # Field name made lowercase.
-    twofactorenabled = models.IntegerField(db_column='TwoFactorEnabled')  # Field name made lowercase.
-    lockoutend = models.TextField(db_column='LockoutEnd', blank=True, null=True)  # Field name made lowercase.
-    lockoutenabled = models.IntegerField(db_column='LockoutEnabled')  # Field name made lowercase.
-    accessfailedcount = models.IntegerField(db_column='AccessFailedCount')  # Field name made lowercase.
-    nombre = models.TextField(db_column='Nombre')  # Field name made lowercase.
+    state =  models.TextField(db_column='State')
+    municipality = models.TextField(db_column='Municipality')
 
     class Meta:
         managed = False
@@ -145,22 +129,6 @@ class Ofertas(models.Model):
     class Meta:
         managed = False
         db_table = 'Ofertas'
-
-
-class Subastas(models.Model):
-    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    fechainicio = models.TextField(db_column='FechaInicio')  # Field name made lowercase.
-    fechafin = models.TextField(db_column='FechaFin')  # Field name made lowercase.
-    fechaanuncio = models.TextField(db_column='FechaAnuncio')  # Field name made lowercase.
-    vendedor = models.IntegerField(db_column='Vendedor')  # Field name made lowercase.
-    completada = models.IntegerField(db_column='Completada')  # Field name made lowercase.
-    ofertamaxima = models.TextField(db_column='OfertaMaxima')  # Field name made lowercase.
-    ofertainicial = models.TextField(db_column='OfertaInicial')  # Field name made lowercase.
-    horaultimaoferta = models.TextField(db_column='HoraUltimaOferta')  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'Subastas'
 
 
 class Efmigrationshistory(models.Model):
