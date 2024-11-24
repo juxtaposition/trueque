@@ -15,4 +15,4 @@ docs/_build/
 
 # Python cache and bytecode
 *.pyc
-__pycache__/
+**/__pycache__/
