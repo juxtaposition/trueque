@@ -9,7 +9,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 #     claimvalue = models.TextField(db_column='ClaimValue', blank=True, null=True) 
 
 #     class Meta:
-#         managed = False
 #         db_table = 'RoleClaims'
 
 
@@ -21,7 +20,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 #     descripcion = models.TextField(db_column='Descripcion', blank=True, null=True) 
 
 #     class Meta:
-#         managed = False
 #         db_table = 'Roles'
 
 
@@ -32,7 +30,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 #     claimvalue = models.TextField(db_column='ClaimValue', blank=True, null=True)  
 
 #     class Meta:
-#         managed = False
 #         db_table = 'UserClaims'
 
 
@@ -41,7 +38,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 #     roleid = models.ForeignKey(Roles, models.DO_NOTHING, db_column='RoleId')  
 
 #     class Meta:
-#         managed = False
 #         db_table = 'UserRoles'
 
 
@@ -95,7 +91,6 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
 #     vendedorid = models.TextField(db_column='VendedorId')  
 
 #     class Meta:
-#         managed = False
 #         db_table = 'Comics'
 
 
@@ -107,7 +102,6 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
 #     visto = models.IntegerField(db_column='Visto')  
 
 #     class Meta:
-#         managed = False
 #         db_table = 'Mensajes'
 
 
@@ -121,23 +115,4 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
 #     visto = models.IntegerField(db_column='Visto')  
 
 #     class Meta:
-#         managed = False
 #         db_table = 'Ofertas'
-
-
-# class Efmigrationshistory(models.Model):
-#     migrationid = models.TextField(db_column='MigrationId', primary_key=True)  
-#     productversion = models.TextField(db_column='ProductVersion')  
-
-#     class Meta:
-#         managed = False
-#         db_table = '__EFMigrationsHistory'
-
-
-# class Efmigrationslock(models.Model):
-#     id = models.AutoField(db_column='Id', primary_key=True)  
-#     timestamp = models.TextField(db_column='Timestamp')  
-
-#     class Meta:
-#         managed = False
-#         db_table = '__EFMigrationsLock'
