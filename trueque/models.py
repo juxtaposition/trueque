@@ -74,21 +74,17 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
     state =  models.TextField(db_column='State')
     municipality = models.TextField(db_column='Municipality')
     first_name = models.TextField(db_column='FirstName', blank=True, null=True)
-    
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    last_name = models.TextField(db_column='LastName', blank=True, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'
 
     def __str__(self):
         return f"{self.username}"
-
-    def set_password(self, raw_password):
-        from django.contrib.auth.hashers import make_password
-        self.password = make_password(raw_password)
-
-    def check_password(self, raw_password):
-        from django.contrib.auth.hashers import check_password
-        return check_password(raw_password, self.password)
 
 
 # class Comics(models.Model):

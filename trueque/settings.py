@@ -32,6 +32,9 @@ ALLOWED_HOSTS = []
 # AUTH_USER_MODEL = 'trueque.Users'
 AUTH_USER_MODEL = 'trueque.CustomUsers'
 
+#Redirect our login
+LOGIN_URL = '/login'
+
 # Application definition
 
 INSTALLED_APPS = [

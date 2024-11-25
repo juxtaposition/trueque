@@ -29,31 +29,30 @@ class CustomAuthenticationForm(AuthenticationForm):
 
         return cleaned_data
 
-# class CustomUserCreationForm(forms.ModelForm):
-    
-#     class Meta:
-#         model = Users
-#         fields = ('first_name', 'username', 'email', 'password', 'state', 'municipality')
-#         labels = {
-#             'first_name': 'Nombre',
-#             'username': 'Usuario',
-#             'email': 'Correo',
-#             'password': 'Contraseña',
-#             'state': 'Estado',
-#             'municipality': 'Municipio'
-#         }
-#         widgets = {
-#             'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
-#             'username': forms.TextInput(attrs={'class': 'form-control',}),
-#             'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True}),
-#             'password': forms.PasswordInput(attrs={'class': 'form-control',}),
-#             'state': forms.TextInput(attrs={'class': 'form-control',}),
-#             'municipality': forms.TextInput(attrs={'class': 'form-control',}),
-#         }
-    
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.set_password(self.cleaned_data['password'])
-#         if commit:
-#             user.save()
-#         return user
+class CustomUserCreationForm(forms.ModelForm):
+    class Meta:
+        model = CustomUsers
+        fields = ('first_name', 'username', 'email', 'password', 'state', 'municipality')
+        labels = {
+            'first_name': 'Nombre',
+            'username': 'Usuario',
+            'email': 'Correo',
+            'password': 'Contraseña',
+            'state': 'Estado',
+            'municipality': 'Municipio'
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'username': forms.TextInput(attrs={'class': 'form-control',}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control',}),
+            'state': forms.TextInput(attrs={'class': 'form-control',}),
+            'municipality': forms.TextInput(attrs={'class': 'form-control',}),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user
