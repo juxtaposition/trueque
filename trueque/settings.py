@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Custom User model
+# AUTH_USER_MODEL = 'trueque.Users'
+AUTH_USER_MODEL = 'trueque.CustomUsers'
 
 # Application definition
 
@@ -38,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'trueque',
 ]
 
 MIDDLEWARE = [
