@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="v6_169">
+    <!-- Fondo primero -->
+    <div class="v8_526"></div>
+    
+    <!-- Contenido por encima -->
+    <div class="detail-comic-container">
+        <div class="v6_197" style="background-image: url('{% static 'img/comic-placeholder/v5_8.png' %}');"></div>
+        <span class="detail-comic-title">Infinity War Edición Especial</span>
+    </div>
+    
+    <span class="v6_199">Infinity War Edición Especial</span>
+    <div class="heart-container">
+        <button class="heart-button" id="btnFavorite">
+            <i class="ph ph-heart"></i>
+        </button>
+    </div>
+    
+    <!-- Resto de elementos de texto -->
+    <span class="v6_201">Descripción: Edición Especial de cómic Infinity War en buen estado. Busco cómics de primera edición. Estoy abierto a ofertas. Solo gente seria.</span>
+    <span class="v6_205">Ofrecido por: {{ username }}</span>
+    <span class="v6_219">15 personas más están ofertando</span>
+    <span class="v6_217">Ecatepec, Estado de México</span>
+    
+    <!-- Botones al final -->
+    <div class="button-container">
+        <button class="v6_223" id="btnContactar">Contactar</button>
+        <button class="v6_213" id="btnOfrecer">Ofrecer</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnContactar = document.getElementById('btnContactar');
+    const btnOfrecer = document.getElementById('btnOfrecer');
+
+    btnContactar.addEventListener('click', function() {
+        alert('Función de contacto pendiente de implementar');
+    });
+
+    btnOfrecer.addEventListener('click', function() {
+        alert('Función de oferta pendiente de implementar');
+    });
+
+    const btnFavorite = document.getElementById('btnFavorite');
+    btnFavorite.addEventListener('click', function() {
+        alert('Función de favoritos pendiente de implementar');
+    });
+});
+</script>
+{% endblock %}

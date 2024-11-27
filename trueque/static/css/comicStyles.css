@@ -53,6 +53,12 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.comic-container:hover {
+  transform: scale(1.05);
 }
 
 /* Estilos base para las imágenes de comics */
@@ -90,6 +96,209 @@ body {
   display: block;
 }
 
+/* Estilos para la página de detalles */
+.v6_169 {
+  width: 100%;
+  height: 800px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: relative;
+  padding-top: 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.comic-detail-container {
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 40px;
+  padding: 20px;
+}
+
+.v6_197 {
+  width: 292px;
+  height: 447px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  border: 1px solid rgba(0,0,0,1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.detail-comic-container {
+  position: absolute;
+  top: 109px;
+  left: calc(50% - 600px + 93px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 292px;
+}
+
+.detail-comic-title {
+  color: rgba(0,0,0,1);
+  font-family: Comfortaa;
+  font-weight: Regular;
+  font-size: 14px;
+  text-align: center;
+  width: 100%;
+}
+
+.comic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.v6_199 {
+  color: rgba(11,0,142,1);
+  position: absolute;
+  top: 109px;
+  left: calc(50% - 600px + 481px);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: 40px;
+  opacity: 1;
+  text-align: left;
+  max-width: 600px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1;
+}
+
+.v6_201, .v6_205, .v6_219, .v6_217 {
+  font-family: Comfortaa;
+  font-size: 16px;
+  line-height: 1.5;
+  position: absolute;
+  z-index: 1;
+}
+
+.v6_201 {
+  width: 678px;
+  color: rgba(0,0,0,1);
+  top: 336px;
+  left: calc(50% - 600px + 479px);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+}
+
+.v6_205 {
+  width: 263px;
+  color: rgba(0,0,0,1);
+  top: 218px;
+  left: calc(50% - 600px + 481px);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+}
+
+.v6_217 {
+  width: 279px;
+  color: rgba(0,0,0,1);
+  top: 217px;
+  left: calc(50% - 600px + 878px);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: right;
+}
+
+.v6_219 {
+  width: 420px;
+  color: #0F01AB;
+  top: 277px;
+  left: calc(50% - 600px + 481px);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+}
+
+.button-container {
+  position: absolute;
+  z-index: 100;
+  top: 510px;
+  right: calc(50% - 600px + 35px);
+  display: flex;
+  gap: 20px;
+}
+
+/* Mantener los estilos de los botones como estaban */
+.v6_213, .v6_223 {
+  width: 144px;
+  height: 46px;
+  color: rgba(255,255,255,1);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+  background: rgba(11,0,142,1);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.v6_213:hover, .v6_223:hover {
+  background: rgba(21,10,152,1);
+}
+
+/* Actualizar estilos para la página de detalles */
+.v8_526 {
+  width: 735px;
+  height: 499px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 80px;
+  left: calc(50% - 600px + 452px);
+  border: 1px solid rgba(154,154,154,1);
+  border-radius: 20px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.heart-container {
+  position: absolute;
+  top: 109px;
+  right: calc(50% - 600px + 35px);
+  z-index: 2;
+}
+
+.heart-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 15px;
+  color: #0F01AB;
+  font-size: 26px;
+  transition: transform 0.2s;
+  margin-top: 5px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.heart-button:hover {
+  transform: scale(1.1);
+}
+
 /* Media queries */
 @media (max-width: 1024px) {
   .v3_2 {
@@ -103,6 +312,16 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     padding: 10px;
+  }
+
+  .comic-detail-container {
+    grid-template-columns: 1fr;
+  }
+
+  .v6_197 {
+    height: 350px;
+    position: relative;
+    top: 0;
   }
 }
 

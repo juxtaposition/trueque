@@ -40,3 +40,9 @@ def temp_home(request):
 def logout(request):
     auth_logout(request)
     return redirect('login')
+
+@login_required
+def comic_detail(request, comic_id):
+    return render(request, 'comic_detail.html', {
+        'username': request.user,
+    })
