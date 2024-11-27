@@ -42,11 +42,11 @@ class CustomUserCreationForm(forms.ModelForm):
         }
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
-            'username': forms.TextInput(attrs={'class': 'form-control',}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True}),
-            'password': forms.PasswordInput(attrs={'class': 'form-control',}),
-            'state': forms.TextInput(attrs={'class': 'form-control',}),
-            'municipality': forms.TextInput(attrs={'class': 'form-control',}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
+            'state': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'municipality': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
         }
 
     def save(self, commit=True):
