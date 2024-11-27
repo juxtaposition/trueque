@@ -1,6 +1,14 @@
+/* Reset y estilos base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-    font-family: 'Comfortaa', sans-serif;
+  font-family: 'Comfortaa', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
 }
 
 .comfortaa-font {
@@ -11,7 +19,95 @@ body {
 }
 
 .body-content {
-    max-width: 1280px;
-    margin: auto;
-    margin-top: 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 50px;
+  padding: 20px;
+}
+
+/* Contenedor de comics */
+.v3_2 {
+  width: 100%;
+  min-height: 100vh;
+  background: rgba(255,255,255,1);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem;
+}
+
+/* Título principal */
+.v6_36 {
+  color: rgba(0,0,0,1);
+  font-family: Comfortaa;
+  font-weight: Bold;
+  font-size: clamp(24px, 5vw, 36px);
+  text-align: left;
+  grid-column: 1 / -1;
+  margin-bottom: 2rem;
+  padding-left: 20px;
+}
+
+/* Estilos para el contenedor de cada comic */
+.comic-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Estilos base para las imágenes de comics */
+[class^="v5_"]:not([class^="v5_26"]):not([class^="v5_27"]):not([class^="v5_29"]):not([class^="v5_31"]):not([class^="v5_33"]):not([class^="v5_34"]):not([class^="v5_35"]):not([class^="v5_36"]):not([class^="v5_37"]):not([class^="v5_38"]) {
+  width: 100%;
+  aspect-ratio: 3/5;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(0,0,0,1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Imágenes específicas */
+.v5_8 { background-image: url("../img/comic-placeholder/v5_8.png"); }
+.v5_11 { background-image: url("../img/comic-placeholder/v5_11.png"); }
+.v5_13 { background-image: url("../img/comic-placeholder/v5_13.png"); }
+.v5_24 { background-image: url("../img/comic-placeholder/v5_24.png"); }
+.v5_15 { background-image: url("../img/comic-placeholder/v5_15.png"); }
+.v5_18 { background-image: url("../img/comic-placeholder/v5_18.png"); }
+.v5_19 { background-image: url("../img/comic-placeholder/v5_19.png"); }
+.v5_20 { background-image: url("../img/comic-placeholder/v5_20.png"); }
+.v5_21 { background-image: url("../img/comic-placeholder/v5_21.png"); }
+.v5_22 { background-image: url("../img/comic-placeholder/v5_22.png"); }
+
+/* Estilos base para los títulos de comics */
+[class^="v5_2"], [class^="v5_3"] {
+  color: rgba(0,0,0,1);
+  font-family: Comfortaa;
+  font-weight: Regular;
+  font-size: clamp(10px, 2vw, 14px);
+  text-align: center;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Media queries */
+@media (max-width: 1024px) {
+  .v3_2 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .v3_2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .v3_2 {
+    grid-template-columns: 1fr;
+  }
 }
