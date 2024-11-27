@@ -13,30 +13,28 @@
         <button class="search-button">
             <i class="ph ph-magnifying-glass"></i>
         </button>
-    </div>
+    </div>  
 
     <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item">
                 <a class="nav-link" href="/">Inicio</a>
             </li>
-
             <li class="nav-item">
                 <a class="nav-link" href="/">Mis cómics</a>
             </li>
-
             <li class="nav-item">
                 <a class="nav-link" href="/">Favoritos</a>
             </li>
             
             <li class="nav-item dropdown profile">
-                <a href="" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href=""  id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{% static 'img/IconComicVerse.png' %}" width="50" height="50" class="rounded-circle" alt="User Profile">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end menu" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item item" href="{% url 'logout' %}">Mi perfil<i class="ph ph-sign-out logout-icon"></i></a></li>
-                    <li><a class="dropdown-item item" href="{% url 'logout' %}">Configuración <i class="ph ph-sign-out logout-icon"></i></a></li>
-                    <li><a class="dropdown-item item" href="{% url 'logout' %}">Cerrar Sesión <i class="ph ph-sign-out logout-icon"></i></a></li>
+                    <li><a class="dropdown-item item" href="" style="border-bottom: 1px solid #0C008F;">Mi perfil</a></li>
+                    <li><a class="dropdown-item item" href="" style="border-bottom: 1px solid #0C008F;">Configuración</a></li>
+                    <li><a class="dropdown-item item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
                 </ul>
             </li>
         </ul>

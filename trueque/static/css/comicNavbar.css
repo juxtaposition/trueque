@@ -13,18 +13,20 @@
 }
 
 .navbar-nav .dropdown-menu.menu {
-    background-color: #5F0293; 
-    border: 1px solid #000000; 
+    background-color: aliceblue; 
     border-radius: 8px; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .navbar-nav .dropdown-menu.menu .dropdown-item.item {
-    color: aliceblue; 
+    color: #0C008F; 
+    font-family: "Comfortaa", sans-serif;
+    font-size: small;
 }
 
 .navbar-nav .dropdown-menu.menu .dropdown-item.item:hover {
-    background-color: #8500CF; 
+    background-color: #0C008F; 
+    color: aliceblue;
 }
 
 .nav-link {
