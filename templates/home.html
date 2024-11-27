@@ -1,2 +1,16 @@
-<b> hola {{ username }} </b>
-<a href="/logout">Logout</a>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Navbar -->
+{% include 'navbar.html' %}
+
+<div class="body-content">
+
+    <b> hola {{ username }} </b>
+    <a href="/logout">Logout</a>
+
+</div>
+
+
+{% endblock %}
