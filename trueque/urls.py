@@ -25,4 +25,5 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('register/', views.register_view, name='register'),
     path('comic/<int:comic_id>/', views.comic_detail, name='comic_detail'),
+    path('my-comics/', views.my_comics, name='my_comics'),
 ]

@@ -1,0 +1,162 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-size: 14px;
+  }
+  
+  .v97_134 {
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px 80px;
+      position: relative;
+  }
+  
+  .v97_143 {
+      display: inline-block;
+      font-family: 'Comfortaa', sans-serif;
+      font-size: clamp(24px, 5vw, 36px);
+      text-align: left;
+      font-weight: bold;
+      font-size: 36px;
+      color: #000;
+      margin-top: 30px;
+      padding-left: 135px;
+  }
+  
+  .add-comic-btn {
+      width: 98px;
+      height: 40px;
+      background: rgba(20,1,229,1);
+      border-radius: 10px;
+      color: white;
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      position: absolute;
+      right: 205px;
+      top: 50px;
+  }
+  
+  .comics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 580px);
+      gap: 50px;
+      margin-top: 50px;
+      justify-content: center;
+  }
+  
+  .comic-card {
+      width: 580px;
+      height: 300px;
+      position: relative;
+      border: 1px solid rgba(154,154,154,1);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 0;
+      display: flex;
+  }
+  
+  .comic-image {
+      position: absolute;
+      width: 140px;
+      height: 245px;
+      left: 25px;
+      top: 25px;
+      border-radius: 10px;
+      object-fit: cover;
+  }
+  
+  .comic-info {
+      position: relative;
+      margin-left: 165px;
+      width: calc(100% - 165px);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .comic-title {
+      color: rgba(11,0,142,1);
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: bold;
+      font-size: 24px;
+      margin-bottom: 20px;
+  }
+  
+  .comic-description {
+      color: rgba(0,0,0,1);
+      font-family: 'Comfortaa', sans-serif;
+      font-size: 14px;
+      margin-bottom: 5px;  /* Reducido a 5px */
+      max-width: 350px;
+      line-height: 1.4;
+  }
+  
+  .comic-status {
+      color: rgba(11,0,142,1);
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 30px;  /* Reducido a 30px */
+  }
+  
+  .comic-buttons {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      gap: 15px;
+      width: 100%;
+  }
+  
+  .btn-primary {
+      width: 180px;
+      height: 35px;
+  }
+  
+  .btn-offers {
+      width: 230px;
+      height: 35px;
+  }
+  
+  .btn-danger {
+      width: 190px;
+      height: 35px;
+      margin-left: auto;
+  }
+  
+  /* Estilos base para todos los botones */
+  .btn-primary, .btn-offers, .btn-danger {
+      border-radius: 10px;
+      height: 31px;
+      color: white;
+      border: none;
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+  }
+  
+  .btn-primary {
+      background: rgba(15,1,171,1);
+      width: 330px;
+  }
+  
+  .btn-offers {
+      background: rgba(15,1,171,1);
+      width: 330px;
+  }
+  
+  .btn-danger {
+      background: rgba(203,1,1,1);
+      width: 160px;
+      margin-left: auto;
+  }
+  
+  .btn-single {
+      width: 100%;
+      margin-left: 0;
+  }
