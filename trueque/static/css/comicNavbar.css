@@ -10,12 +10,14 @@
 .navComicVerse { 
     background: linear-gradient(to right, #09034E, #1401E5); 
     height: 100px;
+    z-index: 1000;
 }
 
 .navbar-nav .dropdown-menu.menu {
     background-color: aliceblue; 
     border-radius: 8px; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1001;
 }
 
 .navbar-nav .dropdown-menu.menu .dropdown-item.item {

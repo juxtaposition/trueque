@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<link rel="stylesheet" href="{% static 'css/myComics.css' %}">
+
+<div class="v97_134">
+    <h1 class="v97_143">Mis Comics</h1>
+    <button class="add-comic-btn" onclick="showMessage('añadir cómic')">Añadir</button>
+
+    <div class="comics-grid">
+        {% for comic in comics %}
+        <div class="comic-card">
+            <img src="{% static comic.image %}" alt="{{ comic.title }}" class="comic-image">
+            <div class="comic-info">
+                <h2 class="comic-title">{{ comic.title }}</h2>
+                <p class="comic-description">{{ comic.description }}</p>
+                <p class="comic-status">{{ comic.status }}</p>
+                <div class="comic-buttons">
+                    {% if comic.status == "Sin Ofertas Activas" %}
+                        <button class="btn-primary" onclick="showMessage('editar')">Editar</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
+                    {% elif comic.status == "Trueque en Progreso" %}
+                        <button class="btn-offers btn-single" onclick="showMessage('ver oferta final')">Ver Oferta Final</button>
+                    {% elif comic.status == "20 Ofertas Activas" %}
+                        <button class="btn-offers" onclick="showMessage('ver ofertas')">Ver Ofertas</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
+                    {% elif comic.status == "Trueque Finalizado" %}
+                        <button class="btn-offers" onclick="showMessage('ver ofertas')">Ver Ofertas</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function showMessage(action) {
+    alert(`Función de ${action} pendiente de implementar`);
+}
+</script>
+{% endblock %}
