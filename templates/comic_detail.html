@@ -5,51 +5,127 @@
 {% include 'navbar.html' %}
 
 <div class="v6_169">
-    <!-- Fondo primero -->
-    <div class="v8_526"></div>
-    
-    <!-- Contenido por encima -->
-    <div class="detail-comic-container">
-        <div class="v6_197" style="background-image: url('{% static comic.image %}');"></div>
-    </div>
+    <!-- ... (código anterior igual) ... -->
 
-    <span class="v6_199">{{ comic.title }}</span>
-    <div class="heart-container">
-        <button class="heart-button" id="btnFavorite">
-            <i class="ph ph-heart"></i>
-        </button>
-    </div>
-
-    <!-- Resto de elementos de texto -->
-    <span class="v6_201">Descripción:<br>{{ comic.description }}</span>
-    <span class="v6_205">Ofrecido por: {{ username }}</span>
-    <span class="v6_219">{{ comic.offers_count }} personas más están ofertando</span>
-    <span class="v6_217">{{ comic.location }}</span>
-    
-    <!-- Botones al final -->
+    <!-- Botón de oferta -->
     <div class="button-container">
-        <button class="v6_223" id="btnContactar">Contactar</button>
-        <button class="v6_213" id="btnOfrecer">Ofrecer</button>
+        <button class="v6_213" id="btnOfrecer" onclick="showMessage('realizar oferta')">Ofrecer</button>
     </div>
 </div>
 
+{% include 'modal.html' %}
+
+<!-- Template para el formulario de oferta -->
+<template id="offerFormTemplate">
+    <form id="offerForm" class="offer-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Título</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Agrega el título de tu oferta..." required>
+        </div>
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea class="form-control" id="description" name="description" rows="4"
+                      placeholder="Agrega una descripción del producto para el propietario..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="image">Imagen del producto</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Confirmar</button>
+        </div>
+    </form>
+</template>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const btnContactar = document.getElementById('btnContactar');
     const btnOfrecer = document.getElementById('btnOfrecer');
-
-    btnContactar.addEventListener('click', function() {
-        alert('Función de contacto pendiente de implementar');
-    });
-
-    btnOfrecer.addEventListener('click', function() {
-        alert('Función de oferta pendiente de implementar');
-    });
-
     const btnFavorite = document.getElementById('btnFavorite');
+
+    // Actualizar la función setupModal
+    const originalSetupModal = window.setupModal;
+    window.setupModal = function(type, params = {}) {
+        let modalTitle, modalBody, modalId;
+
+        if (type === 'comic-form' && params.title === 'Realizar Oferta') {
+            modalId = 'ComicModal';
+            modalTitle = 'Realiza tu oferta';
+
+            const modal = document.getElementById(modalId);
+            const modalTitleElement = modal.querySelector('.modal-title');
+            const modalBodyElement = modal.querySelector('.modal-body');
+
+            if (modalTitleElement) {
+                modalTitleElement.textContent = modalTitle;
+            }
+
+            // Cargar el template del formulario
+            const template = document.getElementById('offerFormTemplate');
+            modalBodyElement.innerHTML = template.innerHTML;
+
+            // Configurar el formulario
+            const form = modalBodyElement.querySelector('#offerForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Aquí irá la lógica para enviar la oferta
+                console.log('Enviando oferta...');
+                const formData = new FormData(form);
+                // Aquí puedes agregar la lógica para enviar los datos al servidor
+
+                // Cerrar el modal después de enviar
+                const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                modal.hide();
+
+                // Mostrar mensaje de éxito
+                alert('Oferta enviada con éxito');
+            });
+
+            return;
+        }
+
+        // Si no es una oferta, usar la función original
+        originalSetupModal(type, params);
+    };
+
     btnFavorite.addEventListener('click', function() {
         alert('Función de favoritos pendiente de implementar');
     });
 });
 </script>
+
+<style>
+.offer-form {
+    padding: 20px;
+}
+
+.offer-form .form-group {
+    margin-bottom: 20px;
+}
+
+.offer-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.offer-form input,
+.offer-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal-footer {
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+</style>
 {% endblock %}
