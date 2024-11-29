@@ -93,7 +93,7 @@ class Comic(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField()
-    image = models.ImageField(upload_to='comics/')
+    image = models.ImageField(upload_to='comics/', null=True, blank=True)  # Permitir nulos temporalmente
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comics')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -116,6 +116,7 @@ class Offer(models.Model):
     offerer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='offers_made')
     description = models.TextField()
     offered_item = models.CharField(max_length=200)
+    offered_item_image = models.ImageField(upload_to='offers/', null=True, blank=True)  # Campo nuevo para la imagen
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
