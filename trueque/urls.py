@@ -30,4 +30,6 @@ urlpatterns = [
     path('comic/<int:comic_id>/edit/', views.edit_comic, name='edit_comic'),
     path('comic/<int:comic_id>/delete/', views.delete_comic, name='delete_comic'),
     path('comic/<int:comic_id>/offer/', views.make_offer, name='make_offer'),
+    path('comic/<int:comic_id>/offer/', views.make_offer, name='make_offer'),
+    path('comic/<int:comic_id>/offers/', views.view_offers, name='view_offers'),
 ]
