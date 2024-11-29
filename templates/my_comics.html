@@ -19,7 +19,7 @@
     <div class="comics-grid">
         {% for comic in comics %}
         <div class="comic-card">
-            <img src="{% static comic.image %}" alt="{{ comic.title }}" class="comic-image">
+            <img src="/media/{{ comic.image }}" alt="{{ comic.title }}" class="comic-image">
             <div class="comic-info">
                 <h2 class="comic-title">{{ comic.title }}</h2>
                 <p class="comic-description">{{ comic.description }}</p>
