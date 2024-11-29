@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="offers-container">
+    <h1 class="offers-title">Ofertas de Trueque</h1>
+
+    <div class="offers-tabs">
+        <button class="tab-button active" onclick="filterOffers('received')">Recibidas</button>
+        <button class="tab-button" onclick="filterOffers('sent')">Enviadas</button>
+    </div>
+
+    <div class="offers-grid" id="offersGrid">
+        {% for offer in offers %}
+        <div class="offer-card" data-type="{{ offer.type }}">
+            <div class="comics-comparison">
+                <div class="comic-item">
+                    <img src="{% static offer.requested_comic.image %}" alt="{{ offer.requested_comic.title }}" class="comic-image">
+                    <h3>{{ offer.requested_comic.title }}</h3>
+                    <p class="owner-info">Dueño: {{ offer.requested_comic.owner }}</p>
+                </div>
+                <div class="exchange-icon">
+                    <i class="ph ph-arrows-left-right"></i>
+                </div>
+                <div class="comic-item">
+                    <img src="{% static offer.offered_comic.image %}" alt="{{ offer.offered_comic.title }}" class="comic-image">
+                    <h3>{{ offer.offered_comic.title }}</h3>
+                    <p class="owner-info">Ofertante: {{ offer.offered_comic.owner }}</p>
+                </div>
+            </div>
+            <div class="offer-details">
+                <p class="offer-date">{{ offer.date }}</p>
+                <p class="offer-status {{ offer.status }}">{{ offer.status }}</p>
+                {% if offer.type == "received" and offer.status == "pending" %}
+                <div class="offer-actions">
+                    <button class="btn-accept" onclick="handleOffer({{ offer.id }}, 'accept')">Aceptar</button>
+                    <button class="btn-reject" onclick="handleOffer({{ offer.id }}, 'reject')">Rechazar</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="no-offers">No hay ofertas disponibles</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.offers-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.offers-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.offers-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tab-button {
+    padding: 0.5rem 2rem;
+    border: none;
+    border-radius: 5px;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.tab-button.active {
+    background: #0C008F;
+    color: white;
+}
+
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.offer-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+.comics-comparison {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.comic-item {
+    flex: 1;
+    text-align: center;
+}
+
+.comic-image {
+    width: 120px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.exchange-icon {
+    padding: 0 1rem;
+    color: #666;
+}
+
+.offer-details {
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.offer-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.offer-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
+
+.offer-status.pending {
+    background: #ffd700;
+    color: #000;
+}
+
+.offer-status.accepted {
+    background: #28a745;
+    color: white;
+}
+
+.offer-status.rejected {
+    background: #dc3545;
+    color: white;
+}
+
+.offer-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-accept, .btn-reject {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-accept {
+    background: #28a745;
+    color: white;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+}
+
+.no-offers {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+}
+</style>
+
+<script>
+function filterOffers(type) {
+    const buttons = document.querySelectorAll('.tab-button');
+    buttons.forEach(button => button.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const cards = document.querySelectorAll('.offer-card');
+    cards.forEach(card => {
+        if (card.dataset.type === type) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function handleOffer(offerId, action) {
+    const formData = new FormData();
+    formData.append('action', action);
+
+    fetch(`/offer/${offerId}/handle/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Recargar la página para mostrar los cambios
+            window.location.reload();
+        } else {
+            alert('Error al procesar la oferta');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al procesar la oferta');
+    });
+}
+
+// Mostrar ofertas recibidas por defecto
+document.addEventListener('DOMContentLoaded', () => {
+    filterOffers('received');
+});
+</script>
+{% endblock %}

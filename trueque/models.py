@@ -83,6 +83,50 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
         return f"{self.username}"
 
 
+class Comic(models.Model):
+    STATUS_CHOICES = [
+        ('available', 'Sin Ofertas Activas'),
+        ('in_progress', 'Trueque en Progreso'),
+        ('with_offers', 'Con Ofertas Activas'),
+        ('completed', 'Trueque Finalizado'),
+    ]
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    image = models.ImageField(upload_to='comics/', null=True, blank=True)  # Permitir nulos temporalmente
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comics')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+class Offer(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('accepted', 'Aceptada'),
+        ('rejected', 'Rechazada'),
+    ]
+
+    comic = models.ForeignKey(Comic, on_delete=models.CASCADE, related_name='offers')
+    offerer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='offers_made')
+    description = models.TextField()
+    offered_item = models.CharField(max_length=200)
+    offered_item_image = models.ImageField(upload_to='offers/', null=True, blank=True)  # Campo nuevo para la imagen
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Oferta para {self.comic.title} por {self.offerer.username}"
+
+
 # class Comics(models.Model):
 #     id = models.AutoField(db_column='Id', primary_key=True)  
 #     nombre = models.TextField(db_column='Nombre')  

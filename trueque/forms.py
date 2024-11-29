@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import CustomUsers
+from .models import CustomUsers, Comic, Offer
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 
@@ -43,7 +43,7 @@ class CustomUserCreationForm(forms.ModelForm):
         }
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
-            'username': forms.TextInput(attrs={'class': 'form-control',}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True}),
             'password': forms.PasswordInput(attrs={'class': 'form-control',}),
             'state': forms.TextInput(attrs={'class': 'form-control',}),
@@ -57,3 +57,18 @@ class CustomUserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class ComicForm(forms.ModelForm):
+    class Meta:
+        model = Comic
+        fields = ['title', 'description', 'image']
+
+class OfferForm(forms.ModelForm):
+    class Meta:
+        model = Offer
+        fields = ['description', 'offered_item']
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'offered_item': forms.TextInput(attrs={'class': 'form-control'}),
+        }

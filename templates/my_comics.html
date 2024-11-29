@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<link rel="stylesheet" href="{% static 'css/myComics.css' %}">
+
+<div class="v97_134">
+    <div class="row">
+        <div class="col-md">
+            <h1 class="v97_143">Mis Cómics</h1>
+        </div>
+        <div class="col-md">
+            <button class="add-comic-btn" onclick="showMessage('añadir cómic')">Añadir</button>
+        </div>
+    </div>
+
+    <div class="comics-grid">
+        {% for comic in comics %}
+        <div class="comic-card">
+            <img src="/media/{{ comic.image }}" alt="{{ comic.title }}" class="comic-image">
+            <div class="comic-info">
+                <h2 class="comic-title">{{ comic.title }}</h2>
+                <p class="comic-description">{{ comic.description }}</p>
+                <p class="comic-status">{{ comic.status }}</p>
+                <div class="comic-buttons">
+                    {% if comic.status == "Sin Ofertas Activas" %}
+                        <button class="btn-primary" onclick="showMessage('editar')">Editar</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
+                    {% elif comic.status == "Trueque en Progreso" %}
+                        <button class="btn-offers btn-single" onclick="showOffers({{ comic.id }})">Ver Oferta Final</button>
+                    {% elif comic.status == "20 Ofertas Activas" %}
+                        <button class="btn-offers" onclick="showOffers({{ comic.id }})">Ver Ofertas</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
+                    {% elif comic.status == "Trueque Finalizado" %}
+                        <button class="btn-offers" onclick="showOffers({{ comic.id }})">Ver Ofertas</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal para ver ofertas -->
+<div class="modal fade" id="offersModal" tabindex="-1" aria-labelledby="offersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="offersModalLabel">Ofertas Recibidas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="offersContainer" class="offers-grid">
+                    <!-- Las ofertas se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'modal.html' %}
+
+<style>
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 15px;
+}
+
+.offer-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.offer-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.offer-info {
+    padding: 15px;
+}
+
+.offer-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.offer-description {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.offer-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-accept, .btn-reject {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-accept {
+    background: #28a745;
+    color: white;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+}
+</style>
+
+<script>
+// Datos de ejemplo de las ofertas
+const mockOffers = {
+    1: [
+        {
+            id: 1,
+            title: 'El Demon Slayer Vol. 1',
+            description: 'Tengo el primer tomo de Demon Slayer, está en súper buen estado, lo leí una vez y lo cuidé mucho.',
+            image: '{% static "img/comic-placeholder/v5_15.png" %}',
+            offerer: 'Juanito541',
+            location: 'Nopaltepec, Estado de México'
+        },
+        {
+            id: 2,
+            title: 'Naruto Vol. 1',
+            description: 'Ofrezco el primer tomo de Naruto en excelente estado.',
+            image: '{% static "img/comic-placeholder/v5_18.png" %}',
+            offerer: 'MariaComics',
+            location: 'CDMX, México'
+        }
+    ],
+    // Puedes agregar más ofertas para otros cómics aquí
+};
+
+function showOffers(comicId) {
+    const offers = mockOffers[comicId] || [];
+    const offersContainer = document.getElementById('offersContainer');
+
+    // Limpiar el contenedor
+    offersContainer.innerHTML = '';
+
+    if (offers.length === 0) {
+        offersContainer.innerHTML = '<p>No hay ofertas disponibles para este cómic.</p>';
+        return;
+    }
+
+    // Crear las tarjetas de ofertas
+    offers.forEach(offer => {
+        const offerCard = `
+            <div class="offer-card">
+                <img src="${offer.image}" alt="${offer.title}" class="offer-image">
+                <div class="offer-info">
+                    <h3 class="offer-title">${offer.title}</h3>
+                    <p class="offer-description">${offer.description}</p>
+                    <p class="offer-user">Ofertado por: ${offer.offerer}</p>
+                    <p class="offer-location">${offer.location}</p>
+                    <div class="offer-actions">
+                        <button class="btn-accept" onclick="acceptOffer(${offer.id})">Aceptar</button>
+                        <button class="btn-reject" onclick="rejectOffer(${offer.id})">Rechazar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        offersContainer.innerHTML += offerCard;
+    });
+
+    // Mostrar el modal
+    const offersModal = new bootstrap.Modal(document.getElementById('offersModal'));
+    offersModal.show();
+}
+
+function acceptOffer(offerId) {
+    // Implementar la lógica para aceptar la oferta
+    alert(`Oferta ${offerId} aceptada`);
+}
+
+function rejectOffer(offerId) {
+    // Implementar la lógica para rechazar la oferta
+    alert(`Oferta ${offerId} rechazada`);
+}
+</script>
+{% endblock %}

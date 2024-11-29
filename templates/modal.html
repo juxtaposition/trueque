@@ -1,0 +1,96 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+
+<!-- Modal Create, Edit Comic and Make Offer-->
+<div class="modal fade" id="ComicModal" tabindex="-1" aria-labelledby="habitComicLabel" aria-hidden="true" data-bs-backdrop="static" 
+data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header titulo">
+                <h3 class="modal-title titulo" id="habitModalLabel"></h3>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Habit-->
+<div class="modal fade" id="deleteComic" tabindex="-1" role="dialog" aria-labelledby="deleteComicLabel" aria-hidden="true" data-bs-backdrop="static" 
+data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <h4 class="modal-body delete">
+        ¿Estás seguro que deseas eliminar este cómic?
+        </h4>
+        <div class="modal-footer">
+            <form method="POST" id="deleteComicForm" action="">
+                {% csrf_token %}
+                <button type="button" class="btn btn-style btn-cancel" style="background-color: rgba(203,1,1,1)" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-style">Eliminar</button>
+            </form>
+        </div>
+    </div>
+    </div>    
+</div>
+
+<script>
+// Función para configurar modales dinámicos
+function setupModal(type, params = {}) {
+    let modalTitle, modalBody, modalId;
+
+    switch(type) {
+        case 'comic-form':
+            modalId = 'ComicModal';
+            modalTitle = params.title || 'Acción de Cómic';
+            break;
+        case 'delete-comic':
+            modalId = 'deleteComic';
+            break;
+        default:
+            console.error('Tipo de modal no reconocido');
+            return;
+    }
+
+    const modal = document.getElementById(modalId);
+    const modalTitleElement = modal.querySelector('.modal-title');
+
+    if (modalTitleElement) {
+        modalTitleElement.textContent = modalTitle;
+    }
+
+    // Si es el modal de eliminación, configura la acción del formulario
+    if (type === 'delete-comic' && params.deleteUrl) {
+        const deleteForm = modal.querySelector('form');
+        if (deleteForm) {
+            deleteForm.action = params.deleteUrl;
+        }
+    }
+
+    // Usar Bootstrap Modal
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+}
+
+// Función para manejar diferentes tipos de acciones
+function showMessage(action, params = {}) {
+    switch(action) {
+        case 'añadir cómic':
+            setupModal('comic-form', { title: 'Añadir Cómic' });
+            break;
+        case 'editar':
+            setupModal('comic-form', { title: 'Editar Cómic' });
+            break;
+        case 'realizar oferta':
+            setupModal('comic-form', { title: 'Realizar Oferta' });
+            break;
+        case 'eliminar':
+            setupModal('delete-comic', { 
+                deleteUrl: params.deleteUrl || '' 
+            });
+            break;
+        default:
+            console.error('Acción no reconocida');
+    }
+}
+</script>

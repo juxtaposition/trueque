@@ -1,0 +1,66 @@
+::placeholder {
+    color: aliceblue; /* Establece el color del placeholder */
+}
+
+.auth-button {
+    width: 150px;
+    padding: 10px;
+    background-color: #0C008F;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: "Comfortaa", sans-serif;
+}
+.auth-button:hover {
+    background-color: #09006e;
+}
+
+.auth-title{
+    text-align: center;
+    color: aliceblue;
+    font-family: "Comfortaa", sans-serif;
+}
+
+.background {
+    background-image: url('/static/img/ComicVerseBG.png');
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-position: center; 
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    background-color: rgba(38, 42, 72, 0.373);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+
+}
+.form-group input {
+    background-color: rgba(255, 255, 255, 0.200);
+    color: aliceblue;
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #0C008F;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: "Comfortaa", sans-serif;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+}
