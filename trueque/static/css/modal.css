@@ -1,0 +1,31 @@
+.btn-cancel:hover {
+    background-color: brown !important;
+}
+
+.btn-style {
+    background-color: #0C008F;
+    border-radius: 10px;
+    color: white;
+    font-family: "Comfortaa", sans-serif;
+    width: 150px;
+    margin-left: 10px;
+
+}
+
+.btn-style:hover {
+    background-color: #09006e;
+    color: white;
+}
+
+.modal-body.delete {
+    color: #0C008F;
+    font-family: "Comfortaa", sans-serif;
+    text-align: center;
+}
+
+.modal-header.titulo {
+    margin-top: 10px !important;
+    color: #0C008F;
+    justify-content: center;
+    font-family: "Comfortaa", sans-serif;
+}

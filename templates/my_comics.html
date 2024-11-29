@@ -7,8 +7,15 @@
 <link rel="stylesheet" href="{% static 'css/myComics.css' %}">
 
 <div class="v97_134">
-    <h1 class="v97_143">Mis Comics</h1>
-    <button class="add-comic-btn" onclick="showMessage('añadir cómic')">Añadir</button>
+    <div class="row">
+        <div class="col-md">
+            <h1 class="v97_143">Mis Cómics</h1>
+        </div>
+        <div class="col-md">
+            <button class="add-comic-btn" onclick="showMessage('añadir cómic')">Añadir</button>
+        </div>
+    </div>
+    
 
     <div class="comics-grid">
         {% for comic in comics %}
@@ -39,8 +46,8 @@
 </div>
 
 <script>
-function showMessage(action) {
-    alert(`Función de ${action} pendiente de implementar`);
-}
+
 </script>
+
+{% include 'modal.html' %}
 {% endblock %}

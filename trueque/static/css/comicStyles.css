@@ -63,7 +63,7 @@ body {
 
 /* Estilos base para las imágenes de comics */
 [class^="v5_"]:not([class^="v5_26"]):not([class^="v5_27"]):not([class^="v5_29"]):not([class^="v5_31"]):not([class^="v5_33"]):not([class^="v5_34"]):not([class^="v5_35"]):not([class^="v5_36"]):not([class^="v5_37"]):not([class^="v5_38"]) {
-  width: 100%;
+  width: 85%;
   aspect-ratio: 3/5;
   background-repeat: no-repeat;
   background-position: center;
@@ -90,7 +90,7 @@ body {
   color: rgba(0,0,0,1);
   font-family: Comfortaa;
   font-weight: Regular;
-  font-size: clamp(10px, 2vw, 14px);
+  font-size: clamp(10px, 2vw, 13px);
   text-align: center;
   margin-top: 0.5rem;
   display: block;
@@ -249,13 +249,13 @@ body {
   text-align: center;
   background: rgba(11,0,142,1);
   border: none;
-  border-radius: 8px;
+  border-radius: 500px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .v6_213:hover, .v6_223:hover {
-  background: rgba(21,10,152,1);
+  background-color: #09006e !important;
 }
 
 /* Actualizar estilos para la página de detalles */
