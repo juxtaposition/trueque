@@ -31,22 +31,24 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CustomUserCreationForm(forms.ModelForm):
     class Meta:
         model = CustomUsers
-        fields = ('first_name', 'username', 'email', 'password', 'state', 'municipality')
+        fields = ('first_name', 'username', 'phonenumber',  'email', 'password', 'state', 'municipality')
         labels = {
             'first_name': 'Nombre',
             'username': 'Usuario',
             'email': 'Correo',
             'password': 'Contraseña',
             'state': 'Estado',
+            'phonenumber': 'Telefono',
             'municipality': 'Municipio'
         }
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'username': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True}),
-            'password': forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
-            'state': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
-            'municipality': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control',}),
+            'state': forms.TextInput(attrs={'class': 'form-control',}),
+            'phonenumber': forms.TextInput(attrs={'class': 'form-control',}),
+            'municipality': forms.TextInput(attrs={'class': 'form-control',}),
         }
 
     def save(self, commit=True):
