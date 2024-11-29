@@ -26,4 +26,8 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('comic/<int:comic_id>/', views.comic_detail, name='comic_detail'),
     path('my-comics/', views.my_comics, name='my_comics'),
+    path('comic/add/', views.add_comic, name='add_comic'),
+    path('comic/<int:comic_id>/edit/', views.edit_comic, name='edit_comic'),
+    path('comic/<int:comic_id>/delete/', views.delete_comic, name='delete_comic'),
+    path('comic/<int:comic_id>/offer/', views.make_offer, name='make_offer'),
 ]
