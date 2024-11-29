@@ -44,13 +44,59 @@ def logout(request):
     auth_logout(request)
     return redirect('login')
 
+
 @login_required
 def comic_detail(request, comic_id):
-    comic = get_object_or_404(Comic, id=comic_id)
-    offers = Offer.objects.filter(comic=comic)
+    try:
+        comic = Comic.objects.get(id=comic_id)
+    except:
+        # Datos de ejemplo para desarrollo
+        example_comics = {
+            1: {
+                'id': 1,
+                'title': 'Action Comics #1 Primera Edición',
+                'description': 'Edición Especial en buen estado. Busco cómics de primera edición. Estoy abierto a ofertas. Solo gente seria.',
+                'image': 'img/comic-placeholder/v5_8.png',
+                'location': 'Ecatepec, Estado de México',
+                'offers_count': 15,
+                'status': 'available'
+            },
+            2: {
+                'id': 2,
+                'title': 'The Walking Dead',
+                'description': 'Excelente estado, edición especial. Acepto ofertas.',
+                'image': 'img/comic-placeholder/v5_13.png',
+                'location': 'Ciudad de México',
+                'offers_count': 8,
+                'status': 'available'
+            },
+            3: {
+                'id': 3,
+                'title': 'Wolverine',
+                'description': 'Edición limitada de Wolverine. Busco intercambio por otros cómics de X-Men.',
+                'image': 'img/comic-placeholder/v5_11.png',
+                'location': 'Guadalajara, Jalisco',
+                'offers_count': 12,
+                'status': 'available'
+            },
+            4: {
+                'id': 4,
+                'title': 'Spiderman',
+                'description': 'Amazing Spider-Man #1. En perfecto estado.',
+                'image': 'img/comic-placeholder/v5_24.png',
+                'location': 'Monterrey, Nuevo León',
+                'offers_count': 20,
+                'status': 'available'
+            }
+        }
+
+        comic = example_comics.get(comic_id)
+        if comic is None:
+            # Si no existe ni en la base de datos ni en los ejemplos
+            return render(request, '404.html', status=404)
+
     return render(request, 'comic_detail.html', {
         'comic': comic,
-        'offers': offers,
         'username': request.user,
     })
 
