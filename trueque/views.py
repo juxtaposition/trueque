@@ -250,18 +250,30 @@ def comic_detail(request, comic_id):
     })
 
 
+# @login_required
+# def add_comic(request):
+#     if request.method == 'POST':
+#         form = ComicForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             comic = form.save(commit=False)
+#             comic.owner = request.user
+#             comic.save()
+#             return redirect('my_comics')
+#     else:
+#         form = ComicForm()
+#     return JsonResponse({'form': form.as_p()})
+
 @login_required
 def add_comic(request):
     if request.method == 'POST':
         form = ComicForm(request.POST, request.FILES)
+
         if form.is_valid():
-            comic = form.save(commit=False)
-            comic.owner = request.user
-            comic.save()
-            return redirect('my_comics')
+            form.save()
+            return redirect('success')
     else:
         form = ComicForm()
-    return JsonResponse({'form': form.as_p()})
+    return render(request, 'create_comic.html', {'form': form})
 
 @login_required
 def edit_comic(request, comic_id):

@@ -61,11 +61,6 @@ class ComicForm(forms.ModelForm):
     class Meta:
         model = Comic
         fields = ['title', 'description', 'image']
-        widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
-        }
 
 class OfferForm(forms.ModelForm):
     class Meta:
