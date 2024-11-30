@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 # class Roleclaims(models.Model):
 #     id = models.AutoField(db_column='Id', primary_key=True)  
@@ -40,6 +42,12 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 #     class Meta:
 #         db_table = 'UserRoles'
 
+#validador personalizado para el número telefónico
+phone_regex = RegexValidator(
+    regex=r'^\d{10}$',
+    message="El número de teléfono debe ser de exactamente 10 dígitos numéricos."
+)
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
@@ -66,8 +74,14 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
     username = models.TextField(db_column='UserName', unique=True, blank=True, null=True)
     email = models.TextField(db_column='Email', blank=True, null=True)
     password = models.TextField(db_column='PasswordHash', blank=True, null=True)
-    phonenumber = models.TextField(db_column='PhoneNumber', blank=True, null=True)
-    state =  models.TextField(db_column='State')
+    phonenumber = models.CharField(  # Cambiamos a CharField para mejor manejo de la validación
+        db_column='PhoneNumber',
+        max_length=10,
+        blank=True,
+        null=True,
+        validators=[phone_regex]
+    )
+    state = models.TextField(db_column='State')
     municipality = models.TextField(db_column='Municipality')
     first_name = models.TextField(db_column='FirstName', blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -152,7 +166,7 @@ class Offer(models.Model):
 
 # class Ofertas(models.Model):
 #     id = models.AutoField(db_column='Id', primary_key=True)  
-#     emisor = models.IntegerField(db_column='Emisor')  
+#     emisor = models.IntegerField(db_column='Emisor')
 #     remitente = models.IntegerField(db_column='Remitente')  
 #     fechaemision = models.TextField(db_column='FechaEmision')  
 #     objetotrueque = models.TextField(db_column='ObjetoTrueque')  
