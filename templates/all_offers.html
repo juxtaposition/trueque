@@ -4,6 +4,7 @@
 {% block content %}
 {% include 'navbar.html' %}
 
+
 <div class="offers-container">
     <h1 class="offers-title">Ofertas de Trueque</h1>
 
@@ -24,7 +25,7 @@
                             <img src="{{ MEDIA_URL }}{{ offer.requested_comic.image }}" alt="{{ offer.requested_comic.title }}" class="comic-image">
                         {% endif %}
                     {% else %}
-                        <img src="{% static 'images/comic-placeholder/v5_8.png' %}" alt="Imagen no disponible" class="comic-image">
+                        <img src="{% static 'images/comic-placeholder/No-Image-Placeholder.png' %}" alt="Imagen no disponible" class="comic-image">
                     {% endif %}
                     <h3>{{ offer.requested_comic.title }}</h3>
                     <p class="owner-info">Dueño: {{ offer.requested_comic.owner }}</p>
@@ -51,8 +52,8 @@
                 <p class="offer-status {{ offer.status }}">{{ offer.status }}</p>
                 {% if offer.type == "received" and offer.status == "pending" %}
                 <div class="offer-actions">
-                    <button class="btn-accept" onclick="handleOffer({{ offer.id }}, 'accept')">Aceptar</button>
-                    <button class="btn-reject" onclick="handleOffer({{ offer.id }}, 'reject')">Rechazar</button>
+                    <button class="btn-primary" onclick="handleOffer({{ offer.id }}, 'accept')">Aceptar</button>
+                    <button class="btn-danger" onclick="handleOffer({{ offer.id }}, 'reject')">Rechazar</button>
                 </div>
                 {% endif %}
             </div>
@@ -65,15 +66,20 @@
 
 <style>
 .offers-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    margin-top: 50px;
+    padding: 20px;
 }
 
 .offers-title {
-    text-align: center;
-    color: #333;
-    margin-bottom: 2rem;
+    color: rgba(0,0,0,1);
+    font-family: Comfortaa;
+    font-weight: Bold;
+    font-size: clamp(24px, 5vw, 36px);
+    text-align: left;
+    grid-column: 1 / -1;
+    padding-left: 20px;
 }
 
 .offers-tabs {
@@ -87,6 +93,7 @@
     padding: 0.5rem 2rem;
     border: none;
     border-radius: 5px;
+    font-family: 'Comfortaa', sans-serif;
     background: #f0f0f0;
     cursor: pointer;
     font-size: 1rem;
@@ -99,13 +106,14 @@
 
 .offers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
 }
 
 .offer-card {
-    background: white;
-    border-radius: 10px;
+    background: aliceblue;
+    border: 1px solid rgba(154,154,154,1);
+    border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     padding: 1rem;
 }
@@ -115,11 +123,13 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
-.comic-item {
+.comic-item{
     flex: 1;
     text-align: center;
+    
 }
 
 .comic-image {
@@ -130,6 +140,8 @@
 }
 
 .exchange-icon {
+    font-size: 50px;
+    color: #0C008F !important;
     padding: 0 1rem;
     color: #666;
 }
@@ -145,9 +157,12 @@
 }
 
 .offer-status {
+    width: 100px;
+    text-align: center;
+    font-family: 'Comfortaa', sans-serif;
     display: inline-block;
     padding: 0.25rem 0.5rem;
-    border-radius: 3px;
+    border-radius: 10px;
     font-size: 0.9rem;
     margin: 0.5rem 0;
 }
@@ -173,23 +188,32 @@
     margin-top: 1rem;
 }
 
-.btn-accept, .btn-reject {
+.btn-primary, .btn-danger {
+    color: white;
+    font-family: 'Comfortaa', sans-serif;
     flex: 1;
     padding: 0.5rem;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
+    border-radius: 10px;
 }
 
-.btn-accept {
-    background: #28a745;
-    color: white;
+.btn-primary {
+      background: #0C008F;
+      width: 330px;
+  }
+
+.btn-primary:hover {
+    background-color: #09006e;
 }
 
-.btn-reject {
-    background: #dc3545;
-    color: white;
+.btn-danger {
+      background: rgba(203,1,1,1);
+      width: 160px;
+      margin-left: auto;
+  }
+
+.btn-danger:hover {
+    background:brown;
 }
 
 .no-offers {
