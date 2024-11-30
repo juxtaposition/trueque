@@ -40,32 +40,6 @@ def register_view(request):
 
 @login_required
 def temp_home(request):
-    # Datos de ejemplo para novedades (hasta que implementemos la base de datos completa)
-    example_comics = {
-        1: {
-            'id': 1,
-            'title': 'Action Comics #1 Primera Edición',
-            'description': 'La primera aparición de Superman. Esta es una reimpresión conmemorativa en excelente estado.',
-            'image': 'img/comic-placeholder/v5_8.png',
-            'owner': 'DC_Fan123',
-            'location': 'Ciudad de México',
-            'publisher': 'DC Comics',
-            'year': '1938 (Reimpresión)',
-            'condition': 'Excelente'
-        },
-        2: {
-            'id': 2,
-            'title': 'The Walking Dead',
-            'description': 'Primer tomo de The Walking Dead en español.',
-            'image': 'img/comic-placeholder/v5_13.png',
-            'owner': 'ZombieFan',
-            'location': 'Guadalajara',
-            'publisher': 'Image Comics',
-            'year': '2010',
-            'condition': 'Muy bueno'
-        },
-        # ... resto de los cómics de ejemplo
-    }
 
     try:
         # Intentar obtener cómics de la base de datos
@@ -86,7 +60,7 @@ def temp_home(request):
                 })
         else:
             # Si no hay cómics en la base de datos, usar los de ejemplo
-            comics_list = list(example_comics.values())
+            return
 
         return render(request, 'home.html', {
             'username': request.user,
@@ -96,7 +70,6 @@ def temp_home(request):
         # Si hay algún error, usar los datos de ejemplo
         return render(request, 'home.html', {
             'username': request.user,
-            'comics': list(example_comics.values())
         })
 
 @login_required
@@ -114,10 +87,12 @@ def comic_detail(request, comic_id):
             'id': comic.id,
             'title': comic.title,
             'description': comic.description,
-            'image': comic.image if comic.image else 'img/comic-placeholder/v5_8.png',
+            'image': comic.image.url,
             'owner': comic.owner.username,
+            'owner_state': comic.owner.state,  # Agregar estado del propietario
+            'owner_municipality': comic.owner.municipality,  # Agregar municipio del propietario
             'status': comic.status,
-            'offers_count': comic.offers.count()
+            'offers_count': comic.offers.count() if hasattr(comic, 'offers') else 0
         }
         return render(request, 'comic_detail.html', {
            'comic': comic_data,
@@ -129,29 +104,24 @@ def comic_detail(request, comic_id):
 @login_required
 def add_comic(request):
     if request.method == 'POST':
-        form = ComicForm(request.POST)
-        if request.FILES.get('image'):
-            uploaded_file = request.FILES['image']
-            image = Image.open(uploaded_file)
-            image = image.resize((300, 450))  # Resize to 300x300
-            temp_file = BytesIO()
-            image.save(temp_file, format='JPEG')  # Save to BytesIO
-            temp_file.seek(0)
-            comic = form.save(commit=False)
-            comic.owner = request.user
-            comic.image.save(uploaded_file.name, ContentFile(temp_file.read()), save=True)
-            comic.save()
-            return JsonResponse({'success': True})
+        form = ComicForm(request.POST, request.FILES)
         if form.is_valid():
             comic = form.save(commit=False)
             comic.owner = request.user
             comic.save()
-            return JsonResponse({'success': True})
+            return JsonResponse({
+                'success': True, 
+                'message': 'Cómic añadido exitosamente'
+            })
+        else:
+            return JsonResponse({
+                'success': False, 
+                'errors': form.errors
+            })
     else:
         form = ComicForm()
-
-    html = render_to_string('form_comic.html', {'form': form}, request=request)
-    return JsonResponse({'html': html})
+        html = render_to_string('form_comic.html', {'form': form}, request=request)
+        return JsonResponse({'html': html})
 
 
 @login_required
@@ -253,69 +223,9 @@ def my_comics(request):
     try:
         comics = Comic.objects.filter(owner=request.user)
         if not comics.exists():  # Si no hay cómics en la base de datos, usa los datos de ejemplo
-            comics = [
-                {
-                    'id': 1,
-                    'title': 'Marvel Zombies Omnibus',
-                    'description': 'Edición integral de Marvel Zombies, un imperdible para los fans del apocalipsis y los superhéroes. Apenas lo hojeé.',
-                    'image': 'img/comic-placeholder/v5_8.png',
-                    'status': 'Sin Ofertas Activas',
-                },
-                {
-                    'id': 2,
-                    'title': 'Naruto n.º 01',
-                    'description': 'Primer tomo de Naruto. Busco Ternurines.',
-                    'image': 'img/comic-placeholder/v5_11.png',
-                    'status': 'Trueque en Progreso',
-                },
-                {
-                    'id': 3,
-                    'title': 'Doraemon Y Los Dioses Del Viento',
-                    'description': 'Aburrido, algo maltratado (algunas hojas sueltas, pero completo), lo cambio por cualquier otro comic.',
-                    'image': 'img/comic-placeholder/v5_8.png',
-                    'status': '20 Ofertas Activas',
-                },
-                {
-                    'id': 4,
-                    'title': 'Dragon Ball Super, Vol. 1',
-                    'description': 'Primer volumen de Dragon Ball Super, como nuevo.',
-                    'image': 'img/comic-placeholder/v5_11.png',
-                    'status': 'Trueque Finalizado',
-                },
-
-            ]
+            return render(request, 'my_comics.html', {'comics': comics})
     except:
-        # Si el modelo Comic aún no existe o hay algún error, usa los datos de ejemplo
-        comics = [
-            {
-                'id': 1,
-                'title': 'Marvel Zombies Omnibus',
-                'description': 'Edición integral de Marvel Zombies, un imperdible para los fans del apocalipsis y los superhéroes. Apenas lo hojeé.',
-                'image': 'img/comic-placeholder/v5_8.png',
-                'status': 'Sin Ofertas Activas',
-            },
-            {
-                'id': 2,
-                'title': 'Naruto n.º 01',
-                'description': 'Primer tomo de Naruto. Busco Ternurines.',
-                'image': 'img/comic-placeholder/v5_11.png',
-                'status': 'Trueque en Progreso',
-            },
-            {
-                'id': 3,
-                'title': 'Doraemon Y Los Dioses Del Viento',
-                'description': 'Aburrido, algo maltratado (algunas hojas sueltas, pero completo), lo cambio por cualquier otro comic.',
-                'image': 'img/comic-placeholder/v5_8.png',
-                'status': '20 Ofertas Activas',
-            },
-            {
-                'id': 4,
-                'title': 'Dragon Ball Super, Vol. 1',
-                'description': 'Primer volumen de Dragon Ball Super, como nuevo.',
-                'image': 'img/comic-placeholder/v5_11.png',
-                'status': 'Trueque Finalizado',
-            }
-        ]
+        return render(request, 'my_comics.html', {'comics': comics})
 
     return render(request, 'my_comics.html', {'comics': comics})
 

@@ -4,13 +4,15 @@
 {% block content %}
 {% include 'navbar.html' %}
 
+<link rel="stylesheet" href="{% static 'css/myComics.css' %}">
+
 <div class="v6_169">
     <!-- Fondo primero -->
     <div class="v8_526"></div>
     
     <!-- Contenido por encima -->
     <div class="detail-comic-container">
-        <div class="v6_197" style="background-image: url('{% static comic.image %}');"></div>
+        <div class="v6_197" style="background-image: url('{{ comic.image }}');"></div>
     </div>
 
     <span class="v6_199">{{ comic.title }}</span>
@@ -23,13 +25,10 @@
     <!-- Resto de elementos de texto -->
     <span class="v6_201">
         Descripción:<br>{{ comic.description }}<br><br>
-        Editorial: {{ comic.publisher }}<br>
-        Año: {{ comic.year }}<br>
-        Estado: {{ comic.condition }}
     </span>
     <span class="v6_205">Ofrecido por: {{ comic.owner }}</span>
     <span class="v6_219">{{ comic.offers_count }} personas más están ofertando</span>
-    <span class="v6_217">{{ comic.location }}</span>
+    <span class="v6_217">{{ comic.owner_state }}, {{ comic.owner_municipality }}</span>
 
     <!-- Botones al final -->
     <div class="button-container">
@@ -56,9 +55,9 @@
             <label for="image">Imagen del producto</label>
             <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Confirmar</button>
+        <div class="btn-container" style="display: flex; justify-content: end; gap: 10px;">
+            <button type="button" class="btn btn-style btn-cancel m-2" style="background-color: #dc3545;" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-style m-2">Confirmar</button>
         </div>
     </form>
 </template>
@@ -119,8 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
                         modal.hide();
 
-                        // Mostrar mensaje de éxito y redirigir
-                        alert('Oferta enviada con éxito');
                         window.location.href = '/offers/';
                     } else {
                         throw new Error(data.message || 'Error al enviar la oferta');
@@ -150,37 +147,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<style>
-.offer-form {
-    padding: 20px;
-}
-
-.offer-form .form-group {
-    margin-bottom: 20px;
-}
-
-.offer-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
-}
-
-.offer-form input,
-.offer-form textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.modal-footer {
-    border-top: 1px solid #ddd;
-    padding-top: 15px;
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-</style>
 {% endblock %}

@@ -45,10 +45,10 @@ class CustomUserCreationForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'username': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True}),
-            'password': forms.PasswordInput(attrs={'class': 'form-control',}),
-            'state': forms.TextInput(attrs={'class': 'form-control',}),
-            'phonenumber': forms.TextInput(attrs={'class': 'form-control',}),
-            'municipality': forms.TextInput(attrs={'class': 'form-control',}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
+            'state': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'phonenumber': forms.TextInput(attrs={'class': 'form-control','required': True}),
+            'municipality': forms.TextInput(attrs={'class': 'form-control','required': True}),
         }
 
     def save(self, commit=True):
@@ -57,12 +57,23 @@ class CustomUserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
-
 class ComicForm(forms.ModelForm):
+    image = forms.ImageField(
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*'  # Solo archivos de imagen
+        }),
+        required=True
+    )
+
     class Meta:
         model = Comic
         fields = ['title', 'description', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
 
 class OfferForm(forms.ModelForm):
     class Meta:

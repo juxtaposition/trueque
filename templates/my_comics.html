@@ -6,99 +6,48 @@
 
 <link rel="stylesheet" href="{% static 'css/myComics.css' %}">
 
+
 <div class="v97_134">
     <div class="row">
         <div class="col-md">
             <h1 class="v97_143">Mis Cómics</h1>
         </div>
         <div class="col-md">
-            <button type="button" class="add-comic-btn" data-bs-toggle="modal" data-bs-target="#createModal" data-action="add">
-                Añadir
-               </button>
+            <button class="add-comic-btn" onclick="showMessage('añadir cómic')">Añadir</button>
         </div>
     </div>
 
     <div class="comics-grid">
         {% for comic in comics %}
-        <div class="comic-card">
-            <img src="/media/{{ comic.image }}" alt="{{ comic.title }}" class="comic-image">
-            <div class="comic-info">
-                <h2 class="comic-title">{{ comic.title }}</h2>
-                <p class="comic-description">{{ comic.description }}</p>
-                <p class="comic-status">{{ comic.status }}</p>
-                <div class="comic-buttons">
-                    {% if comic.status == "Sin Ofertas Activas" %}
-                        <button class="btn-primary" data-bs-toggle="modal" data-comic-id="{{ comic.id }}" data-bs-target="#createModal">Editar</button>
-                        <button class="btn-danger" data-bs-toggle="modal" data-comic-id="{{ comic.id }}" data-bs-target="#deleteComic">Eliminar</button>
-                    {% elif comic.status == "Trueque en Progreso" %}
-                        <button class="btn-offers btn-single" onclick="showOffers({{ comic.id }})">Ver Oferta Final</button>
-                    {% elif comic.status == "20 Ofertas Activas" %}
-                        <button class="btn-offers" onclick="showOffers({{ comic.id }})">Ver Ofertas</button>
-                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
-                    {% elif comic.status == "Trueque Finalizado" %}
-                        <button class="btn-offers" onclick="showOffers({{ comic.id }})">Ver Ofertas</button>
-                        <button class="btn-danger" onclick="showMessage('eliminar')">Eliminar</button>
-                    {% endif %}
+            <div class="comic-card">
+                <img src="/media/{{ comic.image }}" alt="{{ comic.title }}" class="comic-image">
+                <div class="comic-info">
+                    <h2 class="comic-title">{{ comic.title }}</h2>
+                    <p class="comic-description">{{ comic.description }}</p>
+                    <p class="comic-status">{{ comic.status }}</p>
+                    <div class="comic-buttons">
+                        {% if comic.status == "Sin Ofertas Activas" %}
+                            <button class="btn-primary" onclick="showMessage('editar', { comicId: {{ comic.id }} })">Editar</button>
+                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                        {% elif comic.status == "Trueque en Progreso" %}
+                            <button class="btn-offers btn-single" onclick="showMessage('ver oferta final')">Ver Oferta Final</button>
+                        {% elif comic.status == "20 Ofertas Activas" %}
+                            <button class="btn-offers" onclick="showMessage('ver ofertas')">Ver Ofertas</button>
+                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                        {% elif comic.status == "Trueque Finalizado" %}
+                            <button class="btn-offers" onclick="showMessage('ver ofertas')">Ver Ofertas</button>
+                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
+        {% empty %}
+            <div class="no-comics-container">
+                <h1 class="no-comics-message">No hay cómics ofrecidos.</h1>
+            </div>
         {% endfor %}
-    </div>
-</div>
-
-<!-- Modal para ver ofertas -->
-<div class="modal fade" id="offersModal" tabindex="-1" aria-labelledby="offersModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="offersModalLabel">Ofertas Recibidas</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="offersContainer" class="offers-grid">
-                    <!-- Las ofertas se cargarán aquí dinámicamente -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para crear y editar comics -->
-<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createComicModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header titulo">
-                <h3 class="modal-title" id="createComicModalLabel">Añadir Comic</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="comic-body">
-                <div id="createComicContainer" class="offers-grid">
-                    <!-- Las ofertas se cargarán aquí dinámicamente -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete comic -->
-<div class="modal fade" id="deleteComic" tabindex="-1" role="dialog" aria-labelledby="deleteComicLabel" aria-hidden="true" data-bs-backdrop="static" 
-data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-        <h4 class="modal-body delete">
-        ¿Estás seguro que deseas eliminar este cómic?
-        </h4>
-        <div class="modal-footer">
-            <form method="POST" id="deleteComicForm" action="">
-                {% csrf_token %}
-                <button type="button" class="btn btn-style btn-cancel" style="background-color: rgba(203,1,1,1)" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" id="deleteComicButton" class="btn btn-style">Eliminar</button>
-                <form>
-            </div>
-    </div>
     </div>    
 </div>
-
 
 {% include 'modal.html' %}
 
@@ -162,6 +111,7 @@ data-bs-keyboard="false">
     color: white;
 }
 </style>
+
 
 <script>
 // Datos de ejemplo de las ofertas
@@ -233,73 +183,6 @@ function rejectOffer(offerId) {
     // Implementar la lógica para rechazar la oferta
     alert(`Oferta ${offerId} rechazada`);
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('createModal');
-    const modalBody = document.getElementById('comic-body');
-
-    modal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const action = button.getAttribute('data-action');
-        const comicId = button.getAttribute('data-comic-id');
-        
-        let url = action === 'add' ? "{% url 'add_comic' %}" : `/comic/${comicId}/edit/`;
-        
-        fetch(url, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            modalBody.innerHTML = data.html;
-            setupForm(url);
-        });
-
-        modal.querySelector('.modal-title').textContent = action === 'add' ? 'Crear Comic' : 'Editar Comic';
-    });
-
-    function setupForm(url) {
-        const form = modalBody.querySelector('form');
-        form.action = url;
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                   window.location.reload();
-                } else {
-                    modalBody.innerHTML = data.html;
-                    setupForm(url);
-                }
-            });
-        });
-    }
-   
-        const deleteComic = document.getElementById('deleteComic');
-
-        deleteComic.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const comicId = button.getAttribute('data-comic-id'); 
-            var form = document.getElementById('deleteComicForm');
-            form.action = `/comic/${comicId}/delete/`;
-
-            fetch(`/comic/${comicId}/delete/`, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .catch(e => console.log(e));
-        });
-});
 
 </script>
 {% endblock %}

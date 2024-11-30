@@ -35,6 +35,7 @@ data-bs-keyboard="false">
 </div>
 
 <script>
+
 // Función para configurar modales dinámicos
 function setupModal(type, params = {}) {
     let modalTitle, modalBody, modalId;
@@ -76,21 +77,125 @@ function setupModal(type, params = {}) {
 function showMessage(action, params = {}) {
     switch(action) {
         case 'añadir cómic':
-            setupModal('comic-form', { title: 'Añadir Cómic' });
-            break;
         case 'editar':
-            setupModal('comic-form', { title: 'Editar Cómic' });
-            break;
         case 'realizar oferta':
-            setupModal('comic-form', { title: 'Realizar Oferta' });
+            // Determinar la URL correcta
+            const url = 
+                action === 'añadir cómic' ? '/comic/add/' :
+                action === 'editar' ? `/comic/${params.comicId}/edit/` :
+                '/comic/add/';  // Fallback URL
+
+            // Cargar dinámicamente el formulario
+            fetch(url)  
+                .then(response => response.json())
+                .then(data => {
+                    // Insertar HTML del formulario en el modal
+                    document.getElementById('modalBody').innerHTML = data.html;
+                    
+                    // Configurar título del modal
+                    const title = 
+                        action === 'añadir cómic' ? 'Añadir Cómic' :
+                        action === 'editar' ? 'Editar Cómic' :
+                        'Realizar Oferta';
+                    
+                    setupModal('comic-form', { title: title });
+
+                    // Configurar envío del formulario via AJAX
+                    const form = document.getElementById('comicForm');
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const formData = new FormData(form);
+                        
+                        fetch(url, {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                // Cerrar modal
+                                const modal = bootstrap.Modal.getInstance(document.getElementById('ComicModal'));
+                                modal.hide();
+                                
+                                location.reload();
+                            } else {
+                                // Mostrar errores
+                                console.error(result.errors);
+                                alert('Error al guardar el cómic');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Hubo un problema al guardar el cómic');
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             break;
         case 'eliminar':
-            setupModal('delete-comic', { 
-                deleteUrl: params.deleteUrl || '' 
-            });
+            // Configurar el modal de eliminación con la URL específica del cómic
+            if (params.comicId) {
+                const deleteUrl = `/comic/${params.comicId}/delete/`;
+                
+                // Configurar el modal de eliminación
+                setupModal('delete-comic', { 
+                    deleteUrl: deleteUrl 
+                });
+
+                // Configurar el formulario de eliminación
+                const deleteForm = document.getElementById('deleteComicForm');
+                if (deleteForm) {
+                    deleteForm.action = deleteUrl;
+                    
+                    // Opcional: Añadir evento de submit para manejar la eliminación via AJAX
+                    deleteForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        fetch(deleteUrl, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken')
+                            }
+                        })
+                        .then(response => {
+                            if (response.redirected) {
+                                // Si hay una redirección, seguirla
+                                window.location.href = response.url;
+                            } else {
+                                // Recargar la página actual
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Hubo un problema al eliminar el cómic');
+                        });
+                    });
+                }
+            }
             break;
         default:
             console.error('Acción no reconocida');
     }
 }
+
+// Función para obtener la cookie CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 </script>
