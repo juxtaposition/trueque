@@ -11,7 +11,7 @@
             <div class="{{ message.tags }}">{{ message }}</div>
         {% endfor %}
     {% endif %}
-    <form method="POST" action="{% url 'register' %}" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
+    <form method="POST" action="{% url 'register' %}" class="d-flex flex-column align-items-center">
         {% csrf_token %}
         <div class="row">
             <div class="form-group col-md">
@@ -33,7 +33,7 @@
             <div class="form-group col-md">
                 <input type="password" id="password" name="password" placeholder="Contraseña" required>
             </div>
-            <div class="form-group col-md position-relative">
+            <div class="form-group col-md">
                 <input type="tel"
                        id="phonenumber"
                        name="phonenumber"
@@ -41,11 +41,8 @@
                        pattern="[0-9]{10}"
                        maxlength="10"
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                       title="Por favor ingrese exactamente 10 dígitos numéricos"
+                       title="El teléfono debe tener exactamente 10 dígitos numéricos"
                        required>
-                <div id="phoneError" class="error-message">
-                    El teléfono debe tener exactamente 10 dígitos numéricos
-                </div>
             </div>
         </div>
         <br>
@@ -56,50 +53,4 @@
     <div class="text-center" style="color: aliceblue;">
         ¿Ya tienes una cuenta?<a href="{% url 'login' %}" class="btn" style="color: #00FFFB; border: none;"> Inicia sesión</a>
     </div>
-
-    <style>
-        .position-relative {
-            position: relative;
-        }
-
-        .error-message {
-            position: absolute;
-            color: red;
-            font-size: 0.8em;
-            top: 100%;
-            left: 0;
-            display: none;
-            margin-top: 2px;
-            width: 100%;
-            text-align: left;
-        }
-
-        .form-group {
-            margin-bottom: 20px; /* Añade espacio extra debajo de cada grupo de form */
-        }
-    </style>
-
-    <script>
-        function validateForm() {
-            const phoneInput = document.getElementById('phonenumber');
-            const phoneError = document.getElementById('phoneError');
-            const phoneRegex = /^[0-9]{10}$/;
-
-            if (!phoneRegex.test(phoneInput.value)) {
-                phoneError.style.display = 'block';
-                return false;
-            }
-            phoneError.style.display = 'none';
-            return true;
-        }
-
-        document.getElementById('phonenumber').addEventListener('input', function() {
-            const phoneError = document.getElementById('phoneError');
-            if (this.value.length !== 10) {
-                phoneError.style.display = 'block';
-            } else {
-                phoneError.style.display = 'none';
-            }
-        });
-    </script>
 {% endblock %}
