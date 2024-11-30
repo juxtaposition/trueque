@@ -83,19 +83,20 @@ class CustomUsers(AbstractBaseUser, PermissionsMixin):
         return f"{self.username}"
 
 
+
 class Comic(models.Model):
     STATUS_CHOICES = [
-        ('available', 'Sin Ofertas Activas'),
-        ('in_progress', 'Trueque en Progreso'),
-        ('with_offers', 'Con Ofertas Activas'),
-        ('completed', 'Trueque Finalizado'),
+        ('Sin Ofertas Activas', 'Sin Ofertas Activas'),
+        ('Trueque en Progreso', 'Trueque en Progreso'),
+        ('Con Ofertas Activas', 'Con Ofertas Activas'),
+        ('Trueque Finalizado', 'Trueque Finalizado'),
     ]
 
     title = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='comics/', null=True, blank=True)  # Permitir nulos temporalmente
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comics')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Sin Ofertas Activas')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
