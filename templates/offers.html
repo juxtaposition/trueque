@@ -16,13 +16,16 @@
         {% for offer in offers %}
         <div class="offer-card">
             <div class="offer-image">
-                <img src="{% static offer.image %}" alt="{{ offer.title }}">
+                {% if offer.offered_item_image %}
+                    <img src="{{ offer.offered_item_image.url }}" alt="{{ offer.offered_item }}">
+                {% else %}
+                    <img src="{% static 'img/comic-placeholder/default.png' %}" alt="Imagen no disponible">
+                {% endif %}
             </div>
             <div class="offer-info">
-                <h3>{{ offer.title }}</h3>
+                <h3>{{ offer.offered_item }}</h3>
                 <p class="offer-description">{{ offer.description }}</p>
                 <p class="offer-user">Ofertado por: {{ offer.offerer }}</p>
-                <p class="offer-location">{{ offer.location }}</p>
                 <div class="offer-actions">
                     <button class="btn-accept">Aceptar</button>
                     <button class="btn-reject">Rechazar</button>
@@ -60,24 +63,47 @@
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.offer-image {
+    position: relative;
+    width: 100%;
+    padding-top: 75%; /* Proporción 4:3 */
+    overflow: hidden;
 }
 
 .offer-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 200px;
+    height: 100%;
     object-fit: cover;
+    object-position: center;
 }
 
 .offer-info {
     padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.offer-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
 }
 
 .offer-description {
     color: #666;
     margin: 10px 0;
+    flex-grow: 1;
 }
 
-.offer-user, .offer-location {
+.offer-user {
     color: #444;
     font-size: 0.9em;
     margin: 5px 0;
@@ -86,7 +112,8 @@
 .offer-actions {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: auto;
+    padding-top: 15px;
 }
 
 .btn-accept, .btn-reject {
@@ -95,6 +122,8 @@
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    flex: 1;
+    transition: opacity 0.2s;
 }
 
 .btn-accept {
@@ -105,6 +134,10 @@
 .btn-reject {
     background: #dc3545;
     color: white;
+}
+
+.btn-accept:hover, .btn-reject:hover {
+    opacity: 0.9;
 }
 
 .no-offers {

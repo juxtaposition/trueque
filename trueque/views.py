@@ -164,8 +164,23 @@ def delete_comic(request, comic_id):
 def make_offer(request, comic_id):
     if request.method == 'POST':
         try:
-            print("Datos recibidos:", request.POST)  # Para depuración
-            print("Archivos recibidos:", request.FILES)  # Para depuración
+            # Mejorar los logs de depuración
+            print("=" * 50)
+            print("DEBUG: Recibiendo nueva oferta")
+            print(f"FILES: {request.FILES}")
+            print(f"POST: {request.POST}")
+            print("Nueva oferta recibida")
+            print("POST data:", request.POST.dict())
+            print("FILES data:", request.FILES)
+            image = request.FILES.get('image')
+            if image in request.FILES:
+                print("Imagen recibida:")
+                print("- Nombre:", request.FILES['image'].name)
+                print("- Tamaño:", request.FILES['image'].size)
+                print("- Tipo:", request.FILES['image'].content_type)
+            else:
+                print("No se recibió ninguna imagen")
+            print("=" * 50)
 
             # Verificar que los campos requeridos estén presentes
             title = request.POST.get('title')
@@ -178,40 +193,56 @@ def make_offer(request, comic_id):
                     'message': 'El título y la descripción son requeridos'
                 }, status=400)
 
-            # Verificar si el cómic existe en la base de datos
-            comic = Comic.objects.filter(id=comic_id).first()
-            if not comic:
-                # Crear el cómic si no existe (usando tus datos de ejemplo)
-                comic = Comic.objects.create(
-                    id=comic_id,
-                    title=f"Comic {comic_id}",  # Ajusta según tus necesidades
-                    description="Descripción del cómic",
-                    owner=request.user,
-                    status='available'
+            # Obtener o crear el cómic
+            comic = Comic.objects.get(id=comic_id)  # Cambiamos filter.first() por get()
+
+            # Verificar permisos
+            if comic.owner == request.user:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'No puedes hacer una oferta a tu propio cómic'
+                }, status=400)
+
+            # Crear la oferta
+            try:
+                offer = Offer.objects.create(
+                    comic=comic,
+                    offerer=request.user,
+                    description=description,
+                    offered_item=title,
+                    offered_item_image=image,
+                    status='pending'
                 )
+                print(f"Oferta creada exitosamente. ID: {offer.id}")
+                print(
+                    f"Ruta de la imagen: {offer.offered_item_image.path if offer.offered_item_image else 'Sin imagen'}")
 
-            # Crear la oferta con la imagen
-            offer = Offer.objects.create(
-                comic=comic,
-                offerer=request.user,
-                description=description,
-                offered_item=title,
-                offered_item_image=image if image else None,
-                status='pending'
-            )
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Oferta creada exitosamente',
+                    'offer_id': offer.id,
+                    'image_url': offer.offered_item_image.url if offer.offered_item_image else None
+                })
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Oferta creada exitosamente',
-                'offer_id': offer.id
-            })
+            except Exception as e:
+                print(f"Error al guardar la oferta: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Error al guardar la oferta: {str(e)}'
+                }, status=400)
 
-        except Exception as e:
-            print("Error al crear oferta:", str(e))  # Para depuración
+        except Comic.DoesNotExist:
             return JsonResponse({
                 'status': 'error',
-                'message': f'Error al crear la oferta: {str(e)}'
-            }, status=400)
+                'message': 'El cómic no existe'
+            }, status=404)
+
+        except Exception as e:
+            print(f"Error inesperado: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error inesperado: {str(e)}'
+            }, status=500)
 
     return JsonResponse({
         'status': 'error',
@@ -236,42 +267,17 @@ def view_offers(request, comic_id):
         # Obtener el cómic de la base de datos
         comic = Comic.objects.get(id=comic_id)
         offers = Offer.objects.filter(comic=comic)
+
+        # Debug: Imprimir información de las ofertas
+        for offer in offers:
+            print(f"Oferta ID: {offer.id}")
+            if offer.offered_item_image:
+                print(f"Imagen: {offer.offered_item_image.url}")
+            else:
+                print("No tiene imagen")
+
     except Comic.DoesNotExist:
-        # Si no existe en la base de datos, usa los datos de ejemplo
-        example_comics = {
-            1: {
-                'id': 1,
-                'title': 'Action Comics #1 Primera Edición',
-                'description': 'La primera aparición de Superman. Esta es una reimpresión conmemorativa en excelente estado. El cómic que dio inicio a la Edad de Oro de los cómics y definió el género de superhéroes. Portada icónica de Superman levantando un auto.',
-                'image': 'img/comic-placeholder/v5_8.png',
-                'location': 'Polanco, Ciudad de México',
-                'offers_count': 25,
-                'status': 'available',
-                'publisher': 'DC Comics',
-                'year': '1938 (Reimpresión)',
-                'condition': 'Excelente'
-            },
-            # Más datos de ejemplo aquí
-        }
-
-        comic = example_comics.get(comic_id)
-        if comic is None:
-            # Si tampoco está en los datos de ejemplo, devuelve un 404
-            return render(request, '404.html', status=404)
-
-        # Crear ofertas de ejemplo
-        offers = [
-            {
-                'id': 1,
-                'title': 'El Demon Slayer Vol. 1',
-                'description': 'Tengo el primer tomo de Demon Slayer, está en súper buen estado, lo leí una vez y lo cuidé mucho. Estoy buscando un cómic raro. Si te interesa, mándame mensaje y negociamos.',
-                'image': 'img/comic-placeholder/v5_15.png',
-                'offerer': 'Juanito541',
-                'location': 'Nopaltepec, Estado de México',
-                'status': 'pending'
-            },
-            # Más ofertas de ejemplo aquí
-        ]
+        return render(request, '404.html', status=404)
 
     return render(request, 'offers.html', {
         'comic': comic,
@@ -286,20 +292,31 @@ def all_offers(request):
 
     offers = []
 
+    # Debug información
+    print("=" * 50)
+    print("Debugging ofertas:")
+
     # Procesar ofertas recibidas
     for offer in received_offers:
+        # Debug para cada oferta
+        print(f"Oferta ID: {offer.id}")
+        print(f"Tipo: recibida")
+        print(f"Comic image: {offer.comic.image.url if offer.comic.image else 'No image'}")
+        print(f"Offered item image: {offer.offered_item_image.url if offer.offered_item_image else 'No image'}")
+
         offers.append({
             'id': offer.id,
             'type': 'received',
             'requested_comic': {
                 'title': offer.comic.title,
-                'image': offer.comic.image.url if offer.comic.image else 'img/comic-placeholder/v5_8.png',
+                'image': offer.comic.image.url if offer.comic.image else static('images/comic-placeholder/v5_8.png'),
                 'owner': offer.comic.owner.username,
             },
             'offered_comic': {
                 'title': offer.offered_item,
                 'description': offer.description,
-                'image': offer.offered_item_image.url if offer.offered_item_image else 'img/comic-placeholder/v5_15.png',
+                'image': offer.offered_item_image.url if offer.offered_item_image else static(
+                    'images/comic-placeholder/v5_15.png'),
                 'owner': offer.offerer.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
@@ -308,24 +325,32 @@ def all_offers(request):
 
     # Procesar ofertas enviadas
     for offer in sent_offers:
+        # Debug para cada oferta
+        print(f"Oferta ID: {offer.id}")
+        print(f"Tipo: enviada")
+        print(f"Comic image: {offer.comic.image.url if offer.comic.image else 'No image'}")
+        print(f"Offered item image: {offer.offered_item_image.url if offer.offered_item_image else 'No image'}")
+
         offers.append({
             'id': offer.id,
             'type': 'sent',
             'requested_comic': {
                 'title': offer.comic.title,
-                'image': offer.comic.image.url if offer.comic.image else 'img/comic-placeholder/v5_8.png',
+                'image': offer.comic.image.url if offer.comic.image else static('images/comic-placeholder/v5_8.png'),
                 'owner': offer.comic.owner.username,
             },
             'offered_comic': {
                 'title': offer.offered_item,
                 'description': offer.description,
-                'image': offer.offered_item_image.url if offer.offered_item_image else 'img/comic-placeholder/v5_15.png',
+                'image': offer.offered_item_image.url if offer.offered_item_image else static(
+                    'images/comic-placeholder/v5_15.png'),
                 'owner': request.user.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
             'status': offer.status
         })
 
+    print("=" * 50)
     return render(request, 'all_offers.html', {'offers': offers})
 
 

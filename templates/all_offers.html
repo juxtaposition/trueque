@@ -17,7 +17,15 @@
         <div class="offer-card" data-type="{{ offer.type }}">
             <div class="comics-comparison">
                 <div class="comic-item">
-                    <img src="{% static offer.requested_comic.image %}" alt="{{ offer.requested_comic.title }}" class="comic-image">
+                    {% if offer.requested_comic.image %}
+                        {% if 'http' in offer.requested_comic.image %}
+                            <img src="{{ offer.requested_comic.image }}" alt="{{ offer.requested_comic.title }}" class="comic-image">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}{{ offer.requested_comic.image }}" alt="{{ offer.requested_comic.title }}" class="comic-image">
+                        {% endif %}
+                    {% else %}
+                        <img src="{% static 'images/comic-placeholder/v5_8.png' %}" alt="Imagen no disponible" class="comic-image">
+                    {% endif %}
                     <h3>{{ offer.requested_comic.title }}</h3>
                     <p class="owner-info">Dueño: {{ offer.requested_comic.owner }}</p>
                 </div>
@@ -25,7 +33,15 @@
                     <i class="ph ph-arrows-left-right"></i>
                 </div>
                 <div class="comic-item">
-                    <img src="{% static offer.offered_comic.image %}" alt="{{ offer.offered_comic.title }}" class="comic-image">
+                    {% if offer.offered_comic.image %}
+                        {% if 'http' in offer.offered_comic.image %}
+                            <img src="{{ offer.offered_comic.image }}" alt="{{ offer.offered_comic.title }}" class="comic-image">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}{{ offer.offered_comic.image }}" alt="{{ offer.offered_comic.title }}" class="comic-image">
+                        {% endif %}
+                    {% else %}
+                        <img src="{% static 'images/comic-placeholder/v5_15.png' %}" alt="Imagen no disponible" class="comic-image">
+                    {% endif %}
                     <h3>{{ offer.offered_comic.title }}</h3>
                     <p class="owner-info">Ofertante: {{ offer.offered_comic.owner }}</p>
                 </div>

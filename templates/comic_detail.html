@@ -39,8 +39,9 @@
 {% include 'modal.html' %}
 
 <!-- Template para el formulario de oferta -->
+<!-- Template para el formulario de oferta -->
 <template id="offerFormTemplate">
-    <form id="offerForm" class="offer-form">
+    <form id="offerForm" class="offer-form" enctype="multipart/form-data" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="title">Título</label>
@@ -95,38 +96,49 @@ document.addEventListener('DOMContentLoaded', function() {
             // Configurar el formulario
             const form = modalBodyElement.querySelector('#offerForm');
             form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                console.log('Enviando oferta...');
-                const formData = new FormData(form);
+            e.preventDefault();
+            console.log('Iniciando envío de oferta...');
 
-                try {
-                    const pathParts = window.location.pathname.split('/');
-                    const comicId = pathParts[pathParts.indexOf('comic') + 1];
+            const formData = new FormData(form);
 
-                    const response = await fetch(`/comic/${comicId}/offer/`, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        }
-                    });
+            // Debug: Mostrar todos los datos que se van a enviar
+            console.log('Datos a enviar:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ':', pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
+            }
 
-                    const data = await response.json();
+            try {
+                const pathParts = window.location.pathname.split('/');
+                const comicId = pathParts[pathParts.indexOf('comic') + 1];
 
-                    if (data.status === 'success') {
-                        // Cerrar el modal después de enviar
-                        const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-                        modal.hide();
+                console.log('Enviando oferta para comic ID:', comicId);
 
-                        window.location.href = '/offers/';
-                    } else {
-                        throw new Error(data.message || 'Error al enviar la oferta');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error al enviar la oferta: ' + error.message);
+                const response = await fetch(`/comic/${comicId}/offer/`, {
+                    method: 'POST',
+                    body: formData,  // No configurar Content-Type, dejar que el navegador lo haga
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    credentials: 'same-origin'  // Importante para las cookies de sesión
+                });
+
+                console.log('Respuesta recibida:', response.status);
+                const data = await response.json();
+                console.log('Datos de respuesta:', data);
+
+                if (data.status === 'success') {
+                    console.log('Oferta creada exitosamente');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                    modal.hide();
+                    window.location.href = '/offers/';
+                } else {
+                    throw new Error(data.message || 'Error al enviar la oferta');
                 }
-            });
+            } catch (error) {
+                console.error('Error en el proceso:', error);
+                alert('Error al enviar la oferta: ' + error.message);
+            }
+        });
 
             // Mostrar el modal
             const bootstrapModal = new bootstrap.Modal(modal);
