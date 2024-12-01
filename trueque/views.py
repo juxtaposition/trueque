@@ -43,7 +43,7 @@ def temp_home(request):
 
     try:
         # Intentar obtener cómics de la base de datos
-        comics_db = Comic.objects.exclude(owner=request.user).order_by('-created_at')[:10]
+        comics_db = Comic.objects.filter(status="Sin Ofertas Activas").order_by('-created_at')[:10]
 
         if comics_db.exists():
             # Si hay cómics en la base de datos, usarlos
@@ -66,7 +66,8 @@ def temp_home(request):
             'username': request.user,
             'comics': comics_list
         })
-    except:
+    except Exception as e:
+        print(f"error {e}")
         # Si hay algún error, usar los datos de ejemplo
         return render(request, 'home.html', {
             'username': request.user,
@@ -203,6 +204,9 @@ def make_offer(request, comic_id):
                     'message': 'No puedes hacer una oferta a tu propio cómic'
                 }, status=400)
 
+            comic.status="Trueque en Progreso"
+            comic.save()
+
             # Crear la oferta
             try:
                 offer = Offer.objects.create(
@@ -252,7 +256,7 @@ def make_offer(request, comic_id):
 def my_comics(request):
     # Intenta obtener los cómics de la base de datos
     try:
-        comics = Comic.objects.filter(owner=request.user)
+        comics = Comic.objects.filter(owner=request.user, )
         if not comics.exists():  # Si no hay cómics en la base de datos, usa los datos de ejemplo
             return render(request, 'my_comics.html', {'comics': comics})
     except:
@@ -362,7 +366,7 @@ def handle_offer(request, offer_id):
 
         if action == 'accept':
             offer.status = 'accepted'
-            offer.comic.status = 'in_progress'
+            offer.comic.status = 'Trueque Finalizado'
             offer.comic.save()
         elif action == 'reject':
             offer.status = 'rejected'
