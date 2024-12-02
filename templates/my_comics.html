@@ -32,7 +32,8 @@
                         {% elif comic.status == "Trueque en Progreso" %}
                         <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
                         {% elif comic.status == "Trueque Finalizado" %}
-                           <button class="btn-offers" onclick="showMessage('ver oferta final', { offerId: {{ comic.offerId }} })">Ver Oferta Final</button>
+                        <button class="btn-offers" onclick="showMessage('ver oferta final', { offerId: {{ comic.offerId }} })">Ver Oferta Final</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
                         {% endif %}
                     </div>
                 </div>
