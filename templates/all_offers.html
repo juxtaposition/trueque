@@ -86,7 +86,7 @@
             <div class="offer-details">
                 <p class="offer-date">{{ offer.date }}</p>
                 <p class="offer-status {{ offer.status }}">{{ offer.status }}</p>
-                {% if offer.type == "received" and offer.status == "pending" %}
+                {% if offer.type == "received" and offer.status == "Pendiente" %}
                 <div class="offer-actions">
                     <button class="btn-primary" onclick="handleOffer({{ offer.id }}, 'accept')">Aceptar</button>
                     <button class="btn-danger" onclick="handleOffer({{ offer.id }}, 'reject')">Rechazar</button>

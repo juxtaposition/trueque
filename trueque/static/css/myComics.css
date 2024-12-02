@@ -178,22 +178,6 @@
       margin-left: 0;
   }
 
-    .no-comics-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%; 
-        min-height: 300px;
-        text-align: center;
-        flex-direction: column;
-    }
-
-    .no-comics-message {
-        font-size: 1.8rem;
-        color: #555;
-        margin: 0;
-    }
-
   .form-control {
     margin-bottom: 20px;
     font-size: 13px;
