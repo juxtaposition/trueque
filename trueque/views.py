@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Q
 from .forms import CustomAuthenticationForm, CustomUserCreationForm, ComicForm, OfferForm
 from django.core.files.storage import default_storage
 from .models import Comic, Offer
@@ -43,7 +44,13 @@ def temp_home(request):
 
     try:
         # Intentar obtener cómics de la base de datos
-        comics_db = Comic.objects.filter(status="Sin Ofertas Activas").order_by('-created_at')[:10]
+        comics_db = Comic.objects.filter(
+            Q(status="Sin Ofertas Activas") | Q(status="Con Ofertas Activas") | Q(status="Trueque en Progreso") 
+        ).exclude(
+            Q(status="Trueque Finalizado")
+        ).exclude(
+            owner=request.user
+        ).order_by('-created_at')[:10]
 
         if comics_db.exists():
             # Si hay cómics en la base de datos, usarlos
@@ -295,19 +302,11 @@ def all_offers(request):
     sent_offers = Offer.objects.filter(offerer=request.user)
 
     offers = []
-
-    # Debug información
     print("=" * 50)
     print("Debugging ofertas:")
 
     # Procesar ofertas recibidas
     for offer in received_offers:
-        # Debug para cada oferta
-        print(f"Oferta ID: {offer.id}")
-        print(f"Tipo: recibida")
-        print(f"Comic image: {offer.comic.image.url if offer.comic.image else 'No image'}")
-        print(f"Offered item image: {offer.offered_item_image.url if offer.offered_item_image else 'No image'}")
-
         offers.append({
             'id': offer.id,
             'type': 'received',
@@ -324,17 +323,11 @@ def all_offers(request):
                 'owner': offer.offerer.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
-            'status': offer.status
+            'status': offer.get_status_display()  # Cambio aquí
         })
 
-    # Procesar ofertas enviadas
+    # Procesar ofertas enviadas (mismo cambio)
     for offer in sent_offers:
-        # Debug para cada oferta
-        print(f"Oferta ID: {offer.id}")
-        print(f"Tipo: enviada")
-        print(f"Comic image: {offer.comic.image.url if offer.comic.image else 'No image'}")
-        print(f"Offered item image: {offer.offered_item_image.url if offer.offered_item_image else 'No image'}")
-
         offers.append({
             'id': offer.id,
             'type': 'sent',
@@ -351,11 +344,15 @@ def all_offers(request):
                 'owner': request.user.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
-            'status': offer.status
+            'status': offer.get_status_display()  # Cambio aquí
         })
 
     print("=" * 50)
-    return render(request, 'all_offers.html', {'offers': offers})
+    return render(request, 'all_offers.html', {
+        'offers': offers,
+        'default_tab': 'received'  # Indica que el tab inicial será "Recibidas"
+    })  
+
 
 
 @login_required

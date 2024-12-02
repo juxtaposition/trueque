@@ -7,8 +7,6 @@
 
 body {
   font-family: 'Comfortaa', sans-serif;
-  font-size: 14px;
-  min-height: 100vh;
 }
 
 .comfortaa-font {
@@ -28,7 +26,6 @@ body {
 /* Contenedor de comics */
 .v3_2 {
   width: 100%;
-  height: 550px;
   background: rgba(255,255,255,1);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -69,6 +66,7 @@ body {
   border: 1px solid rgba(0,0,0,1);
   border-radius: 10px;
   overflow: hidden;
+  margin-top: 40px;
 }
 
 /* Imágenes específicas */

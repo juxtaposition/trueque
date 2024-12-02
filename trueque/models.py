@@ -134,6 +134,7 @@ class Offer(models.Model):
     offered_item_image = models.ImageField(upload_to='offers/', null=True, blank=True)  # Campo nuevo para la imagen
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
+    
 
     class Meta:
         ordering = ['-created_at']

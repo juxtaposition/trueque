@@ -9,14 +9,18 @@
     <h1 class="offers-title">Ofertas de Trueque</h1>
 
     <div class="offers-tabs">
-        <button class="tab-button active" onclick="filterOffers('received')">Recibidas</button>
-        <button class="tab-button" onclick="filterOffers('sent')">Enviadas</button>
+        <button class="tab-button active" onclick="filterOffers('received', event)">Recibidas</button>
+        <button class="tab-button" onclick="filterOffers('sent', event)">Enviadas</button>
     </div>
+    
+    
 
     <div class="offers-grid" id="offersGrid">
         {% for offer in offers %}
         <div class="offer-card" data-type="{{ offer.type }}">
             <div class="comics-comparison">
+                {% if offer.type == "received" %}
+                <!-- Diseño original para recibidas -->
                 <div class="comic-item">
                     {% if offer.requested_comic.image %}
                         {% if 'http' in offer.requested_comic.image %}
@@ -46,6 +50,38 @@
                     <h3>{{ offer.offered_comic.title }}</h3>
                     <p class="owner-info">Ofertante: {{ offer.offered_comic.owner }}</p>
                 </div>
+                {% else %}
+                <!-- Diseño intercambiado para enviadas -->
+                <div class="comic-item">
+                    {% if offer.offered_comic.image %}
+                        {% if 'http' in offer.offered_comic.image %}
+                            <img src="{{ offer.offered_comic.image }}" alt="{{ offer.offered_comic.title }}" class="comic-image">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}{{ offer.offered_comic.image }}" alt="{{ offer.offered_comic.title }}" class="comic-image">
+                        {% endif %}
+                    {% else %}
+                        <img src="{% static 'images/comic-placeholder/v5_15.png' %}" alt="Imagen no disponible" class="comic-image">
+                    {% endif %}
+                    <h3>{{ offer.offered_comic.title }}</h3>
+                    <p class="owner-info">Ofertante: {{ offer.offered_comic.owner }}</p>
+                </div>
+                <div class="exchange-icon">
+                    <i class="ph ph-arrows-left-right"></i>
+                </div>
+                <div class="comic-item">
+                    {% if offer.requested_comic.image %}
+                        {% if 'http' in offer.requested_comic.image %}
+                            <img src="{{ offer.requested_comic.image }}" alt="{{ offer.requested_comic.title }}" class="comic-image">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}{{ offer.requested_comic.image }}" alt="{{ offer.requested_comic.title }}" class="comic-image">
+                        {% endif %}
+                    {% else %}
+                        <img src="{% static 'images/comic-placeholder/No-Image-Placeholder.png' %}" alt="Imagen no disponible" class="comic-image">
+                    {% endif %}
+                    <h3>{{ offer.requested_comic.title }}</h3>
+                    <p class="owner-info">Dueño: {{ offer.requested_comic.owner }}</p>
+                </div>
+                {% endif %}
             </div>
             <div class="offer-details">
                 <p class="offer-date">{{ offer.date }}</p>
@@ -62,8 +98,10 @@
         <p class="no-offers">No hay ofertas disponibles</p>
         {% endfor %}
     </div>
+    
 </div>
 
+<br><br>
 <style>
 .offers-container {
     max-width: 1400px;
@@ -97,6 +135,7 @@
     background: #f0f0f0;
     cursor: pointer;
     font-size: 1rem;
+    color: #333;
 }
 
 .tab-button.active {
@@ -163,21 +202,21 @@
     display: inline-block;
     padding: 0.25rem 0.5rem;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     margin: 0.5rem 0;
 }
 
-.offer-status.pending {
+.offer-status.Pendiente {
     background: #ffd700;
     color: #000;
 }
 
-.offer-status.accepted {
+.offer-status.Aceptada {
     background: #28a745;
     color: white;
 }
 
-.offer-status.rejected {
+.offer-status.Rechazada {
     background: #dc3545;
     color: white;
 }
@@ -243,20 +282,39 @@
 </style>
 
 <script>
-function filterOffers(type) {
+document.addEventListener('DOMContentLoaded', () => {
+    // Mostrar ofertas recibidas al cargar la página
+    filterOffers('received');
+});
+
+function filterOffers(type, event = null) {
+    // Quitar la clase 'active' de todos los botones
     const buttons = document.querySelectorAll('.tab-button');
     buttons.forEach(button => button.classList.remove('active'));
-    event.target.classList.add('active');
 
+    // Si el evento existe, añadir la clase 'active' al botón seleccionado
+    if (event) {
+        event.target.classList.add('active');
+    } else {
+        // De lo contrario, marcar el botón "Recibidas" como activo por defecto
+        const defaultButton = document.querySelector('.tab-button.active');
+        if (!defaultButton) {
+            const receivedButton = document.querySelector('.tab-button:first-child');
+            if (receivedButton) {
+                receivedButton.classList.add('active');
+            }
+        }
+    }
+
+    // Mostrar solo las ofertas del tipo seleccionado
     const cards = document.querySelectorAll('.offer-card');
     cards.forEach(card => {
-        if (card.dataset.type === type) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
+        card.style.display = card.dataset.type === type ? 'block' : 'none';
     });
 }
+
+
+
 
 function handleOffer(offerId, action) {
     const formData = new FormData();
@@ -286,7 +344,9 @@ function handleOffer(offerId, action) {
 
 // Mostrar ofertas recibidas por defecto
 document.addEventListener('DOMContentLoaded', () => {
-    filterOffers('received');
+    const defaultTab = "{{ default_tab }}"; // Obtén el tipo por defecto del backend
+    filterOffers(defaultTab); // Filtra las ofertas basándote en esta variable
 });
+
 </script>
 {% endblock %}
