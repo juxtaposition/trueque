@@ -13,7 +13,7 @@ Este es un proyecto Django que simula una tienda de cómics online.
 1. Clona el repositorio:
    ```
    git clone https://github.com/juxtaposition/di-habitos-2024/tree/develoment
-   cd di-habitos-2024
+   cd di-habitos-2024](https://github.com/juxtaposition/trueque.git
    ```
 
 2. Crea y activa un entorno virtual:
