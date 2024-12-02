@@ -30,13 +30,13 @@
                             <button class="btn-primary" onclick="showMessage('editar', { comicId: {{ comic.id }} })">Editar</button>
                             <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
                         {% elif comic.status == "Trueque en Progreso" %}
-                            <button class="btn-offers btn-single" onclick="showMessage('ver oferta final')">Ver Oferta Final</button>
+                            <button class="btn-offers btn-single" onclick="location.href='/offers/'">Ver Ofertas</button>
                         {% elif comic.status == "20 Ofertas Activas" %}
                             <button class="btn-offers" onclick="showMessage('ver ofertas')">Ver Ofertas</button>
                             <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
                         {% elif comic.status == "Trueque Finalizado" %}
-                            <button class="btn-offers" onclick="showMessage('ver ofertas')">Ver Ofertas</button>
-                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                           <button class="btn-offers" onclick="showMessage('ver oferta final', { offerId: {{ comic.offerId }} })">Ver Oferta Final</button>
+                            {% comment %} <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button> {% endcomment %}
                         {% endif %}
                     </div>
                 </div>

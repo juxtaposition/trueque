@@ -2,6 +2,19 @@
 
 <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 
+<div class="modal fade" id="offerSimpleModal" tabindex="-1" aria-labelledby="habitComicLabel" aria-hidden="true" data-bs-backdrop="static" 
+data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header titulo">
+                <h3 class="modal-title titulo" id="habitModalLabel"></h3>
+            </div>
+            <div class="modal-body" id="modalOfferBody"></div>
+            <button type="button" class="btn btn-style btn-cancel m-2" style="background-color: #dc3545;" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Create, Edit Comic and Make Offer-->
 <div class="modal fade" id="ComicModal" tabindex="-1" aria-labelledby="habitComicLabel" aria-hidden="true" data-bs-backdrop="static" 
 data-bs-keyboard="false">
@@ -41,6 +54,10 @@ function setupModal(type, params = {}) {
     let modalTitle, modalBody, modalId;
 
     switch(type) {
+        case 'offer-modal':
+            modalId = "offerSimpleModal";
+            modalTitle = "Oferta Finalizada";
+            break;
         case 'comic-form':
             modalId = 'ComicModal';
             modalTitle = params.title || 'Acción de Cómic';
@@ -177,6 +194,33 @@ function showMessage(action, params = {}) {
                 }
             }
             break;
+        case 'ver oferta final':
+        fetch(`/offers/${params.offerId}`)
+         .then(response => response.json())
+         .then(data => {
+            
+         if (data) {
+            const { offer } = data;
+            console.log(offer)
+            const offerCard = `<div class="offer-card">
+                <img src="${offer.offered_item_image}" class="offer-image">
+                <div class="offer-info">
+                    <p class="comic-description">${offer.description}</p>
+                    <p class="comic-status">Ofertado por: ${offer.offerer}</p>
+                </div>
+            </div> `;  
+
+
+             document.getElementById('modalOfferBody').innerHTML = offerCard;
+                          
+             setupModal('offer-modal');
+         }
+          
+         })       
+         .catch(error => {
+             console.error('Error:', error);
+         });
+        break;
         default:
             console.error('Acción no reconocida');
     }

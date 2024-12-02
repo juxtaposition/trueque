@@ -25,6 +25,7 @@ urlpatterns = [
     path('comic/<int:comic_id>/offer/', views.make_offer, name='make_offer'),
     path('comic/<int:comic_id>/offers/', views.view_offers, name='view_offers'),
     path('offers/', views.all_offers, name='all_offers'),
+     path('offers/<int:offer_id>/', views.get_offer_by_id, name='get_offer_by_id'),
     path('offer/<int:offer_id>/handle/', views.handle_offer, name='handle_offer'),
 ]
 

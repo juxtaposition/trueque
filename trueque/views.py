@@ -255,14 +255,36 @@ def make_offer(request, comic_id):
 
 def my_comics(request):
     # Intenta obtener los cómics de la base de datos
+    comicsWithOffers = []
     try:
         comics = Comic.objects.filter(owner=request.user, )
-        if not comics.exists():  # Si no hay cómics en la base de datos, usa los datos de ejemplo
-            return render(request, 'my_comics.html', {'comics': comics})
-    except:
-        return render(request, 'my_comics.html', {'comics': comics})
+        for comic in comics:
+            offer = Offer.objects.filter(status="accepted", comic=comic).first()
+            print(offer)
+            if offer:
+                comicsWithOffers.append({
+                "id": comic.id,
+                "title": comic.title,
+                "description": comic.description,
+                "status": comic.status,
+                "image": comic.image,
+                "offerId": offer.id,
+                })
+            else:
+                comicsWithOffers.append({
+                "id": comic.id,
+                "title": comic.title,
+                "description": comic.description,
+                "status": comic.status,
+                "image": comic.image
+                })
 
-    return render(request, 'my_comics.html', {'comics': comics})
+        if not comics.exists():  # Si no hay cómics en la base de datos, usa los datos de ejemplo
+            return render(request, 'my_comics.html', {'comics': comicsWithOffers })
+    except Exception as e:
+        return render(request, 'my_comics.html', {'comics': comicsWithOffers})
+
+    return render(request, 'my_comics.html', {'comics': comicsWithOffers})
 
 
 @login_required
@@ -374,5 +396,20 @@ def handle_offer(request, offer_id):
         offer.save()
 
         return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=405)
+
+@login_required
+def get_offer_by_id(request, offer_id):
+    if request.method == 'GET':
+        offer = get_object_or_404(Offer, id=offer_id)
+        data = {
+            "status": offer.status,
+            "description": offer.description,
+            "offered_item_image": offer.offered_item_image.url,
+            "offerer": offer.offerer.username
+        }
+
+        return JsonResponse({'status': 'success', 'offer': data })
 
     return JsonResponse({'status': 'error'}, status=405)
