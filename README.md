@@ -1,6 +1,6 @@
 # Proyecto Django de Tienda de Cómics
 
-Este es un proyecto Django que lsimula una tienda de cómics online.
+Este es un proyecto Django que simula una tienda de cómics online.
 
 ## Requisitos previos
 
