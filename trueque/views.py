@@ -50,7 +50,7 @@ def temp_home(request):
             Q(status="Trueque Finalizado")
         ).exclude(
             owner=request.user
-        ).order_by('-created_at')[:10]
+        ).order_by('-created_at')
 
         if comics_db.exists():
             # Si hay cómics en la base de datos, usarlos
@@ -323,12 +323,30 @@ def all_offers(request):
     received_offers = Offer.objects.filter(comic__owner=request.user)
     sent_offers = Offer.objects.filter(offerer=request.user)
 
+    # Primero, obtén todos los comics con ofertas del usuario
+    comics_with_offers = set(offer.comic for offer in received_offers)
+
     offers = []
     print("=" * 50)
     print("Debugging ofertas:")
 
     # Procesar ofertas recibidas
     for offer in received_offers:
+        # Lógica para manejar ofertas del mismo comic
+        other_offers_for_comic = Offer.objects.filter(
+            comic=offer.comic, 
+            comic__owner=request.user
+        )
+        
+        # Si ya hay una oferta aceptada para este comic
+        accepted_offers = other_offers_for_comic.filter(status='accepted')
+        
+        # Si ya hay una oferta aceptada, automáticamente rechaza las demás
+        if accepted_offers.exists():
+            if offer.status != 'accepted':
+                offer.status = 'rejected'
+                offer.save()
+
         offers.append({
             'id': offer.id,
             'type': 'received',
@@ -345,10 +363,11 @@ def all_offers(request):
                 'owner': offer.offerer.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
-            'status': offer.get_status_display()  # Cambio aquí
+            'status': offer.get_status_display(),
+            'can_respond': offer.status == 'pending' and not accepted_offers.exists()
         })
 
-    # Procesar ofertas enviadas (mismo cambio)
+    # Procesar ofertas enviadas (sin cambios)
     for offer in sent_offers:
         offers.append({
             'id': offer.id,
@@ -366,14 +385,14 @@ def all_offers(request):
                 'owner': request.user.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
-            'status': offer.get_status_display()  # Cambio aquí
+            'status': offer.get_status_display()
         })
 
     print("=" * 50)
     return render(request, 'all_offers.html', {
         'offers': offers,
         'default_tab': 'received'  # Indica que el tab inicial será "Recibidas"
-    })  
+    })
 
 
 

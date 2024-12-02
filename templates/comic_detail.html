@@ -23,11 +23,18 @@
     </div>
 
     <!-- Resto de elementos de texto -->
-    <span class="v6_201">
-        Descripción:<br>{{ comic.description }}<br><br>
+    <span class="v6_201" style="color: #0F01AB">
+        Descripción:<br><span style="color: rgba(0,0,0,1);">{{ comic.description }}</span><br><br>
     </span>
-    <span class="v6_205">Ofrecido por: {{ comic.owner }}</span>
-    <span class="v6_219">{{ comic.offers_count }} personas más están ofertando</span>
+    <span class="v6_205" style="color: #0F01AB">Ofrecido por: <span style="color: rgba(0,0,0,1);">{{ comic.owner }}</span></span>
+    <span class="v6_219">
+        {% if comic.offers_count == 0 %}
+            Sin ofertas aún.
+        {% else %}
+            {{ comic.offers_count }} 
+            {% if comic.offers_count == 1 %}oferta en espera{% else %}ofertas en espera{% endif %}
+        {% endif %}
+    </span>
     <span class="v6_217">{{ comic.owner_state }}, {{ comic.owner_municipality }}</span>
 
     <!-- Botones al final -->

@@ -6,7 +6,7 @@
 
 
 <div class="offers-container">
-    <h1 class="offers-title">Ofertas de Trueque</h1>
+    <h1 class="offers-title">Mis Ofertas</h1>
 
     <div class="offers-tabs">
         <button class="tab-button active" onclick="filterOffers('received', event)">Recibidas</button>
@@ -86,7 +86,7 @@
             <div class="offer-details">
                 <p class="offer-date">{{ offer.date }}</p>
                 <p class="offer-status {{ offer.status }}">{{ offer.status }}</p>
-                {% if offer.type == "received" and offer.status == "Pendiente" %}
+                {% if offer.type == "received" and offer.status == "Pendiente" and offer.can_respond %}
                 <div class="offer-actions">
                     <button class="btn-primary" onclick="handleOffer({{ offer.id }}, 'accept')">Aceptar</button>
                     <button class="btn-danger" onclick="handleOffer({{ offer.id }}, 'reject')">Rechazar</button>
