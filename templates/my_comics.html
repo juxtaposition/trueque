@@ -27,12 +27,12 @@
                     <p class="comic-status">{{ comic.status }}</p>
                     <div class="comic-buttons">
                         {% if comic.status == "Sin Ofertas Activas" %}
-                            <button class="btn-primary" onclick="showMessage('editar', { comicId: {{ comic.id }} })">Editar</button>
-                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                        <button class="btn-primary" onclick="showMessage('editar', { comicId: {{ comic.id }} })">Editar</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
                         {% elif comic.status == "Trueque en Progreso" %}
-                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                        <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
                         {% elif comic.status == "Trueque Finalizado" %}
-                            <button class="btn-danger" onclick="showMessage('eliminar', { comicId: {{ comic.id }} })">Eliminar</button>
+                           <button class="btn-offers" onclick="showMessage('ver oferta final', { offerId: {{ comic.offerId }} })">Ver Oferta Final</button>
                         {% endif %}
                     </div>
                 </div>
