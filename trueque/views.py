@@ -1,7 +1,12 @@
+from django.core.files.base import ContentFile
+from io import BytesIO
+from PIL import Image
 from django.contrib.auth import login, logout as auth_logout
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Q
 from .forms import CustomAuthenticationForm, CustomUserCreationForm, ComicForm, OfferForm
 from django.core.files.storage import default_storage
 from .models import Comic, Offer
@@ -36,36 +41,16 @@ def register_view(request):
 
 @login_required
 def temp_home(request):
-    # Datos de ejemplo para novedades (hasta que implementemos la base de datos completa)
-    example_comics = {
-        1: {
-            'id': 1,
-            'title': 'Action Comics #1 Primera Edición',
-            'description': 'La primera aparición de Superman. Esta es una reimpresión conmemorativa en excelente estado.',
-            'image': 'img/comic-placeholder/v5_8.png',
-            'owner': 'DC_Fan123',
-            'location': 'Ciudad de México',
-            'publisher': 'DC Comics',
-            'year': '1938 (Reimpresión)',
-            'condition': 'Excelente'
-        },
-        2: {
-            'id': 2,
-            'title': 'The Walking Dead',
-            'description': 'Primer tomo de The Walking Dead en español.',
-            'image': 'img/comic-placeholder/v5_13.png',
-            'owner': 'ZombieFan',
-            'location': 'Guadalajara',
-            'publisher': 'Image Comics',
-            'year': '2010',
-            'condition': 'Muy bueno'
-        },
-        # ... resto de los cómics de ejemplo
-    }
 
     try:
         # Intentar obtener cómics de la base de datos
-        comics_db = Comic.objects.exclude(owner=request.user).order_by('-created_at')[:10]
+        comics_db = Comic.objects.filter(
+            Q(status="Sin Ofertas Activas") | Q(status="Con Ofertas Activas") | Q(status="Trueque en Progreso") 
+        ).exclude(
+            Q(status="Trueque Finalizado")
+        ).exclude(
+            owner=request.user
+        ).order_by('-created_at')[:10]
 
         if comics_db.exists():
             # Si hay cómics en la base de datos, usarlos
@@ -82,17 +67,17 @@ def temp_home(request):
                 })
         else:
             # Si no hay cómics en la base de datos, usar los de ejemplo
-            comics_list = list(example_comics.values())
+            return
 
         return render(request, 'home.html', {
             'username': request.user,
             'comics': comics_list
         })
-    except:
+    except Exception as e:
+        print(f"error {e}")
         # Si hay algún error, usar los datos de ejemplo
         return render(request, 'home.html', {
             'username': request.user,
-            'comics': list(example_comics.values())
         })
 
 @login_required
@@ -110,184 +95,69 @@ def comic_detail(request, comic_id):
             'id': comic.id,
             'title': comic.title,
             'description': comic.description,
-            'image': comic.image.url if comic.image else 'img/comic-placeholder/v5_8.png',
+            'image': comic.image.url,
             'owner': comic.owner.username,
+            'owner_state': comic.owner.state,  # Agregar estado del propietario
+            'owner_municipality': comic.owner.municipality,  # Agregar municipio del propietario
             'status': comic.status,
-            'offers_count': comic.offers.count()
+            'offers_count': comic.offers.count() if hasattr(comic, 'offers') else 0
         }
+        return render(request, 'comic_detail.html', {
+           'comic': comic_data,
+           'username': request.user,
+         })
     except Comic.DoesNotExist:
-        # Datos de ejemplo para desarrollo
-        # example_comics = {
-        #     1: {
-        #         'id': 1,
-        #         'title': 'Action Comics #1 Primera Edición',
-        #         'description': 'La primera aparición de Superman. Esta es una reimpresión conmemorativa en excelente estado. El cómic que dio inicio a la Edad de Oro de los cómics y definió el género de superhéroes. Portada icónica de Superman levantando un auto.',
-        #         'image': 'img/comic-placeholder/v5_8.png',
-        #         'location': 'Polanco, Ciudad de México',
-        #         'offers_count': 25,
-        #         'status': 'available',
-        #         'publisher': 'DC Comics',
-        #         'year': '1938 (Reimpresión)',
-        #         'condition': 'Excelente'
-        #     },
-        #     2: {
-        #         'id': 2,
-        #         'title': 'The Walking Dead - Volumen Compendio 1',
-        #         'description': 'El primer compendio que recopila los números #1-48. Sigue la historia de Rick Grimes y un grupo de sobrevivientes en un mundo post-apocalíptico zombie. Incluye los arcos argumentales más icónicos de la serie.',
-        #         'image': 'img/comic-placeholder/v5_13.png',
-        #         'location': 'Zapopan, Jalisco',
-        #         'offers_count': 15,
-        #         'status': 'available',
-        #         'publisher': 'Image Comics',
-        #         'year': '2009',
-        #         'condition': 'Muy bueno'
-        #     },
-        #     3: {
-        #         'id': 3,
-        #         'title': 'Wolverine - Edición Limitada Old Man Logan',
-        #         'description': 'La aclamada historia de Mark Millar y Steve McNiven. Situada en un futuro distópico donde los villanos han ganado y Logan vive una vida pacífica, hasta que un último viaje lo obliga a desenvainar sus garras una vez más.',
-        #         'image': 'img/comic-placeholder/v5_11.png',
-        #         'location': 'San Pedro Garza García, Nuevo León',
-        #         'offers_count': 18,
-        #         'status': 'available',
-        #         'publisher': 'Marvel Comics',
-        #         'year': '2008',
-        #         'condition': 'Como nuevo'
-        #     },
-        #     4: {
-        #         'id': 4,
-        #         'title': 'The Amazing Spider-Man #300',
-        #         'description': 'Primera aparición completa de Venom. Un número histórico que marca el debut de uno de los villanos más icónicos de Spider-Man. Arte por Todd McFarlane. Este ejemplar está en excelente estado y es muy buscado por coleccionistas.',
-        #         'image': 'img/comic-placeholder/v5_24.png',
-        #         'location': 'Coyoacán, Ciudad de México',
-        #         'offers_count': 30,
-        #         'status': 'available',
-        #         'publisher': 'Marvel Comics',
-        #         'year': '1988',
-        #         'condition': 'Muy bueno'
-        #     },
-        #     5: {
-        #         'id': 5,
-        #         'title': 'Demon Slayer #1',
-        #         'description': 'Primer tomo del manga que se convirtió en un fenómeno global. Sigue la historia de Tanjiro Kamado en su búsqueda por convertir a su hermana nuevamente en humana y vengarse de los demonios. Edición en español.',
-        #         'image': 'img/comic-placeholder/v5_15.png',
-        #         'location': 'Tlalpan, Ciudad de México',
-        #         'offers_count': 12,
-        #         'status': 'available',
-        #         'publisher': 'Panini Manga',
-        #         'year': '2020',
-        #         'condition': 'Excelente'
-        #     },
-        #     6: {
-        #         'id': 6,
-        #         'title': 'Naruto Manga Tomo 1',
-        #         'description': 'El comienzo de una de las series manga más populares de todos los tiempos. Primera edición en español del manga que introdujo al mundo ninja de Naruto Uzumaki. Incluye los primeros capítulos de la serie.',
-        #         'image': 'img/comic-placeholder/v5_18.png',
-        #         'location': 'Guadalajara Centro, Jalisco',
-        #         'offers_count': 8,
-        #         'status': 'available',
-        #         'publisher': 'Panini Manga',
-        #         'year': '2006',
-        #         'condition': 'Bueno'
-        #     },
-        #     7: {
-        #         'id': 7,
-        #         'title': 'The Boys Vol. 1: The Name of the Game',
-        #         'description': 'El cómic que inspiró la serie de Amazon. Una historia oscura y satírica sobre un grupo de vigilantes que mantienen a los superhéroes bajo control. Contenido para adultos.',
-        #         'image': 'img/comic-placeholder/v5_19.png',
-        #         'location': 'Roma Norte, Ciudad de México',
-        #         'offers_count': 20,
-        #         'status': 'available',
-        #         'publisher': 'Dynamite Entertainment',
-        #         'year': '2007',
-        #         'condition': 'Como nuevo'
-        #     },
-        #     8: {
-        #         'id': 8,
-        #         'title': 'Marvel Must-Have: Civil War',
-        #         'description': 'La épica saga completa de Civil War. Incluye la serie principal que enfrentó a Iron Man contra el Capitán América en una batalla ideológica que dividió al universo Marvel. Edición especial Must-Have.',
-        #         'image': 'img/comic-placeholder/v5_20.png',
-        #         'location': 'Santa Fe, Ciudad de México',
-        #         'offers_count': 22,
-        #         'status': 'available',
-        #         'publisher': 'Marvel Comics',
-        #         'year': '2019',
-        #         'condition': 'Excelente'
-        #     },
-        #     9: {
-        #         'id': 9,
-        #         'title': 'DCeased: War of the Undead Gods',
-        #         'description': 'La última entrega de la aclamada serie DCeased. Una historia apocalíptica que lleva la infección tecnológica a escala cósmica. Incluye todos los números de la serie limitada.',
-        #         'image': 'img/comic-placeholder/v5_21.png',
-        #         'location': 'San Nicolás de los Garza, Nuevo León',
-        #         'offers_count': 15,
-        #         'status': 'available',
-        #         'publisher': 'DC Comics',
-        #         'year': '2022',
-        #         'condition': 'Como nuevo'
-        #     },
-        #     10: {
-        #         'id': 10,
-        #         'title': 'The Umbrella Academy Volume 2: Dallas',
-        #         'description': 'El segundo volumen de la serie creada por Gerard Way. Continúa las aventuras de la disfuncional familia de superhéroes mientras intentan prevenir otro apocalipsis. Edición en tapa dura.',
-        #         'image': 'img/comic-placeholder/v5_22.png',
-        #         'location': 'Condesa, Ciudad de México',
-        #         'offers_count': 17,
-        #         'status': 'available',
-        #         'publisher': 'Dark Horse Comics',
-        #         'year': '2009',
-        #         'condition': 'Muy bueno'
-        #     }
-        # }
-
-        comic_data = example_comics.get(comic_id)
-        if not comic_data:
-            return render(request, '404.html', status=404)
-
-    return render(request, 'comic_detail.html', {
-        'comic': comic,
-        'username': request.user,
-    })
-
-
-# @login_required
-# def add_comic(request):
-#     if request.method == 'POST':
-#         form = ComicForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             comic = form.save(commit=False)
-#             comic.owner = request.user
-#             comic.save()
-#             return redirect('my_comics')
-#     else:
-#         form = ComicForm()
-#     return JsonResponse({'form': form.as_p()})
+        return render(request, '404.html', status=404)
 
 @login_required
 def add_comic(request):
-    print(request.user)
     if request.method == 'POST':
         form = ComicForm(request.POST, request.FILES)
         if form.is_valid():
             comic = form.save(commit=False)
             comic.owner = request.user
             comic.save()
-            return redirect('my_comics')
+            return JsonResponse({
+                'success': True, 
+                'message': 'Cómic añadido exitosamente'
+            })
+        else:
+            return JsonResponse({
+                'success': False, 
+                'errors': form.errors
+            })
     else:
         form = ComicForm()
-    return render(request, 'create_comic.html', {'form': form})
+        html = render_to_string('form_comic.html', {'form': form}, request=request)
+        return JsonResponse({'html': html})
+
 
 @login_required
 def edit_comic(request, comic_id):
     comic = get_object_or_404(Comic, id=comic_id, owner=request.user)
     if request.method == 'POST':
-        form = ComicForm(request.POST, request.FILES, instance=comic)
+        form = ComicForm(request.POST, instance=comic)
+        if request.FILES.get('image'):
+            uploaded_file = request.FILES['image']
+            image = Image.open(uploaded_file)
+            image = image.resize((300, 450))  # Resize to 300x300
+            temp_file = BytesIO()
+            image.save(temp_file, format='JPEG')  # Save to BytesIO
+            temp_file.seek(0)
+            comic = form.save(commit=False)
+            comic.owner = request.user
+            comic.image.save(uploaded_file.name, ContentFile(temp_file.read()), save=True)
+            comic.save()
+            return JsonResponse({'success': True})
         if form.is_valid():
             form.save()
-            return redirect('my_comics')
+            return JsonResponse({'success': True})
     else:
         form = ComicForm(instance=comic)
-    return JsonResponse({'form': form.as_p()})
+
+    html = render_to_string('form_comic.html', {'form': form}, request=request)
+    return JsonResponse({'html': html})
+
 
 @login_required
 def delete_comic(request, comic_id):
@@ -302,8 +172,23 @@ def delete_comic(request, comic_id):
 def make_offer(request, comic_id):
     if request.method == 'POST':
         try:
-            print("Datos recibidos:", request.POST)  # Para depuración
-            print("Archivos recibidos:", request.FILES)  # Para depuración
+            # Mejorar los logs de depuración
+            print("=" * 50)
+            print("DEBUG: Recibiendo nueva oferta")
+            print(f"FILES: {request.FILES}")
+            print(f"POST: {request.POST}")
+            print("Nueva oferta recibida")
+            print("POST data:", request.POST.dict())
+            print("FILES data:", request.FILES)
+            image = request.FILES.get('image')
+            if image in request.FILES:
+                print("Imagen recibida:")
+                print("- Nombre:", request.FILES['image'].name)
+                print("- Tamaño:", request.FILES['image'].size)
+                print("- Tipo:", request.FILES['image'].content_type)
+            else:
+                print("No se recibió ninguna imagen")
+            print("=" * 50)
 
             # Verificar que los campos requeridos estén presentes
             title = request.POST.get('title')
@@ -316,40 +201,59 @@ def make_offer(request, comic_id):
                     'message': 'El título y la descripción son requeridos'
                 }, status=400)
 
-            # Verificar si el cómic existe en la base de datos
-            comic = Comic.objects.filter(id=comic_id).first()
-            if not comic:
-                # Crear el cómic si no existe (usando tus datos de ejemplo)
-                comic = Comic.objects.create(
-                    id=comic_id,
-                    title=f"Comic {comic_id}",  # Ajusta según tus necesidades
-                    description="Descripción del cómic",
-                    owner=request.user,
-                    status='available'
+            # Obtener o crear el cómic
+            comic = Comic.objects.get(id=comic_id)  # Cambiamos filter.first() por get()
+
+            # Verificar permisos
+            if comic.owner == request.user:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'No puedes hacer una oferta a tu propio cómic'
+                }, status=400)
+
+            comic.status="Trueque en Progreso"
+            comic.save()
+
+            # Crear la oferta
+            try:
+                offer = Offer.objects.create(
+                    comic=comic,
+                    offerer=request.user,
+                    description=description,
+                    offered_item=title,
+                    offered_item_image=image,
+                    status='pending'
                 )
+                print(f"Oferta creada exitosamente. ID: {offer.id}")
+                print(
+                    f"Ruta de la imagen: {offer.offered_item_image.path if offer.offered_item_image else 'Sin imagen'}")
 
-            # Crear la oferta con la imagen
-            offer = Offer.objects.create(
-                comic=comic,
-                offerer=request.user,
-                description=description,
-                offered_item=title,
-                offered_item_image=image if image else None,
-                status='pending'
-            )
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Oferta creada exitosamente',
+                    'offer_id': offer.id,
+                    'image_url': offer.offered_item_image.url if offer.offered_item_image else None
+                })
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Oferta creada exitosamente',
-                'offer_id': offer.id
-            })
+            except Exception as e:
+                print(f"Error al guardar la oferta: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Error al guardar la oferta: {str(e)}'
+                }, status=400)
 
-        except Exception as e:
-            print("Error al crear oferta:", str(e))  # Para depuración
+        except Comic.DoesNotExist:
             return JsonResponse({
                 'status': 'error',
-                'message': f'Error al crear la oferta: {str(e)}'
-            }, status=400)
+                'message': 'El cómic no existe'
+            }, status=404)
+
+        except Exception as e:
+            print(f"Error inesperado: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error inesperado: {str(e)}'
+            }, status=500)
 
     return JsonResponse({
         'status': 'error',
@@ -358,74 +262,36 @@ def make_offer(request, comic_id):
 
 def my_comics(request):
     # Intenta obtener los cómics de la base de datos
+    comicsWithOffers = []
     try:
-        comics = Comic.objects.filter(owner=request.user)
+        comics = Comic.objects.filter(owner=request.user, )
+        for comic in comics:
+            offer = Offer.objects.filter(status="accepted", comic=comic).first()
+            print(offer)
+            if offer:
+                comicsWithOffers.append({
+                "id": comic.id,
+                "title": comic.title,
+                "description": comic.description,
+                "status": comic.status,
+                "image": comic.image,
+                "offerId": offer.id,
+                })
+            else:
+                comicsWithOffers.append({
+                "id": comic.id,
+                "title": comic.title,
+                "description": comic.description,
+                "status": comic.status,
+                "image": comic.image
+                })
+
         if not comics.exists():  # Si no hay cómics en la base de datos, usa los datos de ejemplo
-            comics = [
-                {
-                    'id': 1,
-                    'title': 'Marvel Zombies Omnibus',
-                    'description': 'Edición integral de Marvel Zombies, un imperdible para los fans del apocalipsis y los superhéroes. Apenas lo hojeé.',
-                    'image': 'img/comic-placeholder/v5_8.png',
-                    'status': 'Sin Ofertas Activas',
-                },
-                {
-                    'id': 2,
-                    'title': 'Naruto n.º 01',
-                    'description': 'Primer tomo de Naruto. Busco Ternurines.',
-                    'image': 'img/comic-placeholder/v5_11.png',
-                    'status': 'Trueque en Progreso',
-                },
-                {
-                    'id': 3,
-                    'title': 'Doraemon Y Los Dioses Del Viento',
-                    'description': 'Aburrido, algo maltratado (algunas hojas sueltas, pero completo), lo cambio por cualquier otro comic.',
-                    'image': 'img/comic-placeholder/v5_8.png',
-                    'status': '20 Ofertas Activas',
-                },
-                {
-                    'id': 4,
-                    'title': 'Dragon Ball Super, Vol. 1',
-                    'description': 'Primer volumen de Dragon Ball Super, como nuevo.',
-                    'image': 'img/comic-placeholder/v5_11.png',
-                    'status': 'Trueque Finalizado',
-                },
+            return render(request, 'my_comics.html', {'comics': comicsWithOffers })
+    except Exception as e:
+        return render(request, 'my_comics.html', {'comics': comicsWithOffers})
 
-            ]
-    except:
-        # Si el modelo Comic aún no existe o hay algún error, usa los datos de ejemplo
-        comics = [
-            {
-                'id': 1,
-                'title': 'Marvel Zombies Omnibus',
-                'description': 'Edición integral de Marvel Zombies, un imperdible para los fans del apocalipsis y los superhéroes. Apenas lo hojeé.',
-                'image': 'img/comic-placeholder/v5_8.png',
-                'status': 'Sin Ofertas Activas',
-            },
-            {
-                'id': 2,
-                'title': 'Naruto n.º 01',
-                'description': 'Primer tomo de Naruto. Busco Ternurines.',
-                'image': 'img/comic-placeholder/v5_11.png',
-                'status': 'Trueque en Progreso',
-            },
-            {
-                'id': 3,
-                'title': 'Doraemon Y Los Dioses Del Viento',
-                'description': 'Aburrido, algo maltratado (algunas hojas sueltas, pero completo), lo cambio por cualquier otro comic.',
-                'image': 'img/comic-placeholder/v5_8.png',
-                'status': '20 Ofertas Activas',
-            },
-            {
-                'id': 4,
-                'title': 'Dragon Ball Super, Vol. 1',
-                'description': 'Primer volumen de Dragon Ball Super, como nuevo.',
-                'image': 'img/comic-placeholder/v5_11.png',
-                'status': 'Trueque Finalizado',
-            }
-        ]
-
-    return render(request, 'my_comics.html', {'comics': comics})
+    return render(request, 'my_comics.html', {'comics': comicsWithOffers})
 
 
 @login_required
@@ -434,42 +300,17 @@ def view_offers(request, comic_id):
         # Obtener el cómic de la base de datos
         comic = Comic.objects.get(id=comic_id)
         offers = Offer.objects.filter(comic=comic)
+
+        # Debug: Imprimir información de las ofertas
+        for offer in offers:
+            print(f"Oferta ID: {offer.id}")
+            if offer.offered_item_image:
+                print(f"Imagen: {offer.offered_item_image.url}")
+            else:
+                print("No tiene imagen")
+
     except Comic.DoesNotExist:
-        # Si no existe en la base de datos, usa los datos de ejemplo
-        example_comics = {
-            1: {
-                'id': 1,
-                'title': 'Action Comics #1 Primera Edición',
-                'description': 'La primera aparición de Superman. Esta es una reimpresión conmemorativa en excelente estado. El cómic que dio inicio a la Edad de Oro de los cómics y definió el género de superhéroes. Portada icónica de Superman levantando un auto.',
-                'image': 'img/comic-placeholder/v5_8.png',
-                'location': 'Polanco, Ciudad de México',
-                'offers_count': 25,
-                'status': 'available',
-                'publisher': 'DC Comics',
-                'year': '1938 (Reimpresión)',
-                'condition': 'Excelente'
-            },
-            # Más datos de ejemplo aquí
-        }
-
-        comic = example_comics.get(comic_id)
-        if comic is None:
-            # Si tampoco está en los datos de ejemplo, devuelve un 404
-            return render(request, '404.html', status=404)
-
-        # Crear ofertas de ejemplo
-        offers = [
-            {
-                'id': 1,
-                'title': 'El Demon Slayer Vol. 1',
-                'description': 'Tengo el primer tomo de Demon Slayer, está en súper buen estado, lo leí una vez y lo cuidé mucho. Estoy buscando un cómic raro. Si te interesa, mándame mensaje y negociamos.',
-                'image': 'img/comic-placeholder/v5_15.png',
-                'offerer': 'Juanito541',
-                'location': 'Nopaltepec, Estado de México',
-                'status': 'pending'
-            },
-            # Más ofertas de ejemplo aquí
-        ]
+        return render(request, '404.html', status=404)
 
     return render(request, 'offers.html', {
         'comic': comic,
@@ -483,6 +324,8 @@ def all_offers(request):
     sent_offers = Offer.objects.filter(offerer=request.user)
 
     offers = []
+    print("=" * 50)
+    print("Debugging ofertas:")
 
     # Procesar ofertas recibidas
     for offer in received_offers:
@@ -491,40 +334,47 @@ def all_offers(request):
             'type': 'received',
             'requested_comic': {
                 'title': offer.comic.title,
-                'image': offer.comic.image.url if offer.comic.image else 'img/comic-placeholder/v5_8.png',
+                'image': offer.comic.image.url if offer.comic.image else static('images/comic-placeholder/v5_8.png'),
                 'owner': offer.comic.owner.username,
             },
             'offered_comic': {
                 'title': offer.offered_item,
                 'description': offer.description,
-                'image': offer.offered_item_image.url if offer.offered_item_image else 'img/comic-placeholder/v5_15.png',
+                'image': offer.offered_item_image.url if offer.offered_item_image else static(
+                    'images/comic-placeholder/v5_15.png'),
                 'owner': offer.offerer.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
-            'status': offer.status
+            'status': offer.get_status_display()  # Cambio aquí
         })
 
-    # Procesar ofertas enviadas
+    # Procesar ofertas enviadas (mismo cambio)
     for offer in sent_offers:
         offers.append({
             'id': offer.id,
             'type': 'sent',
             'requested_comic': {
                 'title': offer.comic.title,
-                'image': offer.comic.image.url if offer.comic.image else 'img/comic-placeholder/v5_8.png',
+                'image': offer.comic.image.url if offer.comic.image else static('images/comic-placeholder/v5_8.png'),
                 'owner': offer.comic.owner.username,
             },
             'offered_comic': {
                 'title': offer.offered_item,
                 'description': offer.description,
-                'image': offer.offered_item_image.url if offer.offered_item_image else 'img/comic-placeholder/v5_15.png',
+                'image': offer.offered_item_image.url if offer.offered_item_image else static(
+                    'images/comic-placeholder/v5_15.png'),
                 'owner': request.user.username,
             },
             'date': offer.created_at.strftime('%Y-%m-%d'),
-            'status': offer.status
+            'status': offer.get_status_display()  # Cambio aquí
         })
 
-    return render(request, 'all_offers.html', {'offers': offers})
+    print("=" * 50)
+    return render(request, 'all_offers.html', {
+        'offers': offers,
+        'default_tab': 'received'  # Indica que el tab inicial será "Recibidas"
+    })  
+
 
 
 @login_required
@@ -535,7 +385,7 @@ def handle_offer(request, offer_id):
 
         if action == 'accept':
             offer.status = 'accepted'
-            offer.comic.status = 'in_progress'
+            offer.comic.status = 'Trueque Finalizado'
             offer.comic.save()
         elif action == 'reject':
             offer.status = 'rejected'
@@ -543,5 +393,20 @@ def handle_offer(request, offer_id):
         offer.save()
 
         return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=405)
+
+@login_required
+def get_offer_by_id(request, offer_id):
+    if request.method == 'GET':
+        offer = get_object_or_404(Offer, id=offer_id)
+        data = {
+            "status": offer.status,
+            "description": offer.description,
+            "offered_item_image": offer.offered_item_image.url,
+            "offerer": offer.offerer.username
+        }
+
+        return JsonResponse({'status': 'success', 'offer': data })
 
     return JsonResponse({'status': 'error'}, status=405)

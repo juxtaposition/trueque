@@ -7,8 +7,6 @@
 
 body {
   font-family: 'Comfortaa', sans-serif;
-  font-size: 14px;
-  min-height: 100vh;
 }
 
 .comfortaa-font {
@@ -28,11 +26,9 @@ body {
 /* Contenedor de comics */
 .v3_2 {
   width: 100%;
-  min-height: 100vh;
   background: rgba(255,255,255,1);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 2rem;
 }
 
 /* Título principal */
@@ -43,7 +39,6 @@ body {
   font-size: clamp(24px, 5vw, 36px);
   text-align: left;
   grid-column: 1 / -1;
-  margin-bottom: 2rem;
   padding-left: 20px;
 }
 
@@ -71,6 +66,7 @@ body {
   border: 1px solid rgba(0,0,0,1);
   border-radius: 10px;
   overflow: hidden;
+  margin-top: 40px;
 }
 
 /* Imágenes específicas */
@@ -249,7 +245,7 @@ body {
   text-align: center;
   background: rgba(11,0,142,1);
   border: none;
-  border-radius: 500px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
